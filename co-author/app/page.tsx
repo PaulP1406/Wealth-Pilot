@@ -13,10 +13,10 @@ export default function Home() {
         </div>
         
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#about" className="text-gray-600 hover:text-gray-900 transition-colors">About Us</a>
-          <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
-          <a href="#login" className="text-gray-600 hover:text-gray-900 transition-colors">Log In</a>
-          <a href="#join" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium">Join Now</a>
+          <a href="/about" className="text-gray-600 hover:text-gray-900 transition-colors">About Us</a>
+          <a href="/pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
+          <a href="/signin" className="text-gray-600 hover:text-gray-900 transition-colors">Log In</a>
+          <a href="/signup" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium">Join Now</a>
         </div>
         
         {/* Mobile menu button */}
