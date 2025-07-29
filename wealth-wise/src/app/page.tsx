@@ -8,76 +8,62 @@ export default function Home() {
 
   const features = [
     {
-      title: "Track Your Spending",
-      description: "Visualize your income, expenses, and savings trends with intuitive charts.",
-      icon: "📊",
+      title: "Smart Capital Tracking",
+      description: "Monitor your total capital across all accounts with real-time balance updates and intelligent categorization.",
+      icon: "💰",
+      metric: "$34,809.89",
       delay: 0.1
     },
     {
-      title: "Simulate Investing",
-      description: "Build and manage a mock stock portfolio using real-time market data.",
+      title: "Goal-Based Investing",
+      description: "Set monthly goals and track progress with AI-powered forecasting and portfolio optimization.",
       icon: "📈",
+      metric: "52% / $56,000",
       delay: 0.2
     },
     {
-      title: "AI Budget Assistant",
-      description: "Receive actionable, personalized budget tips powered by OpenAI.",
-      icon: "🤖",
+      title: "Expense Analytics",
+      description: "Visualize spending patterns with interactive charts and get personalized budget recommendations.",
+      icon: "📊",
+      metric: "43% Rent",
       delay: 0.3
     }
   ];
 
-  const steps = [
-    {
-      step: "01",
-      title: "Sign up securely",
-      description: "Create your account with bank-level security"
-    },
-    {
-      step: "02",
-      title: "Input your financial data",
-      description: "Connect your accounts or enter data manually"
-    },
-    {
-      step: "03",
-      title: "Get insights & start investing",
-      description: "Receive personalized recommendations and begin mock investing"
-    }
+  const transactions = [
+    { name: "Maria Charles", type: "Card transfer", amount: "-$100.00", icon: "👤" },
+    { name: "We Work", type: "Health & Fitness", amount: "-$290.00", icon: "🏢" },
+    { name: "Uber", type: "Transport", amount: "-$56.00", icon: "🚗" },
+    { name: "Netflix", type: "Entertainment", amount: "-$19.99", icon: "📺" }
   ];
 
-  const testimonials = [
-    {
-      name: "Sarah Chen",
-      role: "Software Engineer",
-      quote: "WealthPilot helped me understand where my money goes and how to invest smarter — all risk-free!",
-      avatar: "👩‍💼"
-    },
-    {
-      name: "Marcus Rodriguez",
-      role: "Marketing Manager",
-      quote: "The AI recommendations are spot-on. I've saved 30% more since using WealthPilot.",
-      avatar: "👨‍💼"
-    }
+  const accounts = [
+    { name: "Main source of capital", balance: "$21,487.16", account: "...4141", active: true },
+    { name: "Additional source of capital", balance: "$9,678.00", account: "...6721 VISA", active: true },
+    { name: "Additional source of capital", balance: "$3,644.73", account: "...5995 VISA", active: true }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-[#1a1a1a] text-white">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-200">
+      <nav className="fixed top-0 w-full bg-[#2a2a2a]/80 backdrop-blur-md z-50 border-b border-[#3a3a3a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">WealthPilot</h1>
+              <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center mr-3">
+                <span className="text-black font-bold text-lg">W</span>
+              </div>
+              <h1 className="text-2xl font-bold text-white">WealthPilot</h1>
             </div>
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-slate-600 hover:text-blue-600 transition-colors">Features</a>
-              <a href="#how-it-works" className="text-slate-600 hover:text-blue-600 transition-colors">How It Works</a>
-              <a href="#testimonials" className="text-slate-600 hover:text-blue-600 transition-colors">Testimonials</a>
-              <a href="#signin" className="text-slate-600 hover:text-blue-600 transition-colors">Sign In</a>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                Sign Up
+              <a href="#features" className="text-gray-300 hover:text-yellow-400 transition-colors">Features</a>
+              <a href="#dashboard" className="text-gray-300 hover:text-yellow-400 transition-colors">Dashboard</a>
+              <a href="#pricing" className="text-gray-300 hover:text-yellow-400 transition-colors">Pricing</a>
+              <a href="#signin" className="text-gray-300 hover:text-yellow-400 transition-colors">Sign In</a>
+              <button className="bg-yellow-400 text-black px-6 py-2 rounded-lg hover:bg-yellow-500 transition-colors font-semibold">
+                Get Started
               </button>
             </div>
 
@@ -85,7 +71,7 @@ export default function Home() {
             <div className="md:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-slate-600 hover:text-blue-600"
+                className="text-gray-300 hover:text-yellow-400"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -97,13 +83,13 @@ export default function Home() {
           {/* Mobile Navigation */}
           {isMenuOpen && (
             <div className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-slate-200">
-                <a href="#features" className="block px-3 py-2 text-slate-600 hover:text-blue-600">Features</a>
-                <a href="#how-it-works" className="block px-3 py-2 text-slate-600 hover:text-blue-600">How It Works</a>
-                <a href="#testimonials" className="block px-3 py-2 text-slate-600 hover:text-blue-600">Testimonials</a>
-                <a href="#signin" className="block px-3 py-2 text-slate-600 hover:text-blue-600">Sign In</a>
-                <button className="w-full mt-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                  Sign Up
+              <div className="px-2 pt-2 pb-3 space-y-1 bg-[#2a2a2a] border-t border-[#3a3a3a]">
+                <a href="#features" className="block px-3 py-2 text-gray-300 hover:text-yellow-400">Features</a>
+                <a href="#dashboard" className="block px-3 py-2 text-gray-300 hover:text-yellow-400">Dashboard</a>
+                <a href="#pricing" className="block px-3 py-2 text-gray-300 hover:text-yellow-400">Pricing</a>
+                <a href="#signin" className="block px-3 py-2 text-gray-300 hover:text-yellow-400">Sign In</a>
+                <button className="w-full mt-2 bg-yellow-400 text-black px-6 py-2 rounded-lg hover:bg-yellow-500 transition-colors font-semibold">
+                  Get Started
                 </button>
               </div>
             </div>
@@ -120,27 +106,27 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight">
-                Navigate your finances with{' '}
-                <span className="text-blue-600">confidence.</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
+                Master your finances with{' '}
+                <span className="text-yellow-400">intelligence.</span>
               </h1>
-              <p className="mt-6 text-xl text-slate-600 leading-relaxed">
-                Track spending, invest virtually, and get personalized budget insights — all in one place.
+              <p className="mt-6 text-xl text-gray-300 leading-relaxed">
+                Track capital, set goals, and optimize spending with AI-powered insights — all in one sophisticated dashboard.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="bg-yellow-400 text-black px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-500 transition-colors"
                 >
-                  Get Started
+                  Start Free Trial
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors"
+                  className="border-2 border-[#3a3a3a] text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[#3a3a3a] transition-colors"
                 >
-                  Live Demo
+                  View Demo
                 </motion.button>
               </div>
             </motion.div>
@@ -151,21 +137,42 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 h-96 flex items-center justify-center">
-                <div className="text-white text-center">
-                  <div className="text-6xl mb-4">📱</div>
-                  <p className="text-xl font-semibold">WealthPilot App</p>
-                  <p className="text-blue-100 mt-2">Your financial dashboard</p>
+              {/* Dashboard Preview */}
+              <div className="bg-[#2a2a2a] rounded-2xl p-6 border border-[#3a3a3a] shadow-2xl">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
+                      <span className="text-black font-bold">W</span>
+                    </div>
+                    <span className="text-white font-semibold">WealthPilot</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  </div>
                 </div>
-              </div>
-              {/* Floating elements */}
-              <div className="absolute -top-4 -right-4 bg-green-500 text-white p-4 rounded-lg">
-                <div className="text-2xl">📈</div>
-                <p className="text-sm font-semibold">+12.5%</p>
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-orange-500 text-white p-4 rounded-lg">
-                <div className="text-2xl">💰</div>
-                <p className="text-sm font-semibold">$2,450</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-[#3a3a3a] rounded-lg p-4">
+                    <div className="text-2xl font-bold text-white">$34,809.89</div>
+                    <div className="text-sm text-gray-400">Your capital</div>
+                  </div>
+                  <div className="bg-green-500 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-white">52%</div>
+                    <div className="text-sm text-green-100">Goal progress</div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 bg-[#3a3a3a] rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Monthly Goal</span>
+                    <span className="text-sm text-white">52% / $56,000</span>
+                  </div>
+                  <div className="w-full bg-[#1a1a1a] rounded-full h-2">
+                    <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '52%' }}></div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -173,7 +180,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+      <section id="features" className="py-16 px-4 sm:px-6 lg:px-8 bg-[#2a2a2a]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -182,11 +189,11 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-              Everything you need to master your finances
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Powerful features for modern finance
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Powerful tools designed to help you understand, track, and grow your wealth.
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Everything you need to track, analyze, and optimize your financial life.
             </p>
           </motion.div>
 
@@ -199,19 +206,20 @@ export default function Home() {
                 transition={{ duration: 0.8, delay: feature.delay }}
                 viewport={{ once: true }}
                 whileHover={{ y: -5 }}
-                className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-xl border border-slate-200 hover:shadow-lg transition-all duration-300"
+                className="bg-[#3a3a3a] p-8 rounded-xl border border-[#4a4a4a] hover:border-yellow-400 transition-all duration-300"
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">{feature.title}</h3>
-                <p className="text-slate-600 leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
+                <p className="text-gray-300 leading-relaxed mb-4">{feature.description}</p>
+                <div className="text-2xl font-bold text-yellow-400">{feature.metric}</div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50">
+      {/* Dashboard Preview Section */}
+      <section id="dashboard" className="py-16 px-4 sm:px-6 lg:px-8 bg-[#1a1a1a]">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -220,79 +228,123 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-              Get started in minutes
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Your financial dashboard
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Simple steps to take control of your financial future.
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              See your finances in real-time with our sophisticated dashboard.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {steps.map((step, index) => (
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Left Column - Capital & Goals */}
+            <div className="lg:col-span-2 space-y-6">
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
-                className="text-center"
+                className="bg-[#2a2a2a] rounded-xl p-6 border border-[#3a3a3a]"
               >
-                <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6">
-                  {step.step}
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-semibold text-white">Your capital</h3>
+                  <button className="text-yellow-400 text-sm hover:text-yellow-300">This month</button>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.title}</h3>
-                <p className="text-slate-600">{step.description}</p>
+                <div className="text-4xl font-bold text-white mb-4">$34,809.89</div>
+                <div className="flex items-center justify-between text-sm text-gray-400 mb-6">
+                  <span>All accounts</span>
+                  <span>3/3 selected</span>
+                </div>
+                
+                <div className="space-y-3">
+                  {accounts.map((account, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-[#3a3a3a] rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-4 h-4 rounded-full ${account.active ? 'bg-green-500' : 'bg-gray-500'}`}></div>
+                        <div>
+                          <div className="text-white font-medium">{account.name}</div>
+                          <div className="text-sm text-gray-400">{account.account}</div>
+                        </div>
+                      </div>
+                      <div className="text-white font-semibold">{account.balance}</div>
+                    </div>
+                  ))}
+                </div>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
-              Loved by thousands of users
-            </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              See how WealthPilot is transforming personal finance management.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, index) => (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-xl border border-slate-200"
+                className="bg-[#2a2a2a] rounded-xl p-6 border border-[#3a3a3a]"
               >
-                <div className="flex items-center mb-6">
-                  <div className="text-4xl mr-4">{testimonial.avatar}</div>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-semibold text-white">Monthly goal</h3>
+                  <button className="text-yellow-400 text-sm hover:text-yellow-300">Edit goal</button>
+                </div>
+                <div className="text-3xl font-bold text-white mb-2">52% / $56,000</div>
+                <div className="w-full bg-[#1a1a1a] rounded-full h-3 mb-4">
+                  <div className="bg-yellow-400 h-3 rounded-full" style={{ width: '52%' }}></div>
+                </div>
+                <div className="text-sm text-gray-400">Forecasted capital is $39,968.60</div>
+              </motion.div>
+            </div>
+
+            {/* Right Column - Payments & Transactions */}
+            <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+                className="bg-green-500 rounded-xl p-6"
+              >
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                    <span className="text-green-500 font-bold">H</span>
+                  </div>
                   <div>
-                    <h4 className="font-semibold text-slate-900">{testimonial.name}</h4>
-                    <p className="text-slate-600 text-sm">{testimonial.role}</p>
+                    <div className="text-white font-semibold">Henry Rogers</div>
+                    <div className="text-green-100 text-sm">...5995 VISA</div>
                   </div>
                 </div>
-                <p className="text-slate-700 leading-relaxed italic">"{testimonial.quote}"</p>
+                <div className="text-sm text-green-100 mb-2">unregular payment</div>
+                <div className="text-3xl font-bold text-white">$1,200.00</div>
               </motion.div>
-            ))}
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="bg-[#2a2a2a] rounded-xl p-6 border border-[#3a3a3a]"
+              >
+                <h3 className="text-xl font-semibold text-white mb-4">Recent transactions</h3>
+                <div className="space-y-4">
+                  {transactions.map((transaction, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-[#3a3a3a] rounded-full flex items-center justify-center text-sm">
+                          {transaction.icon}
+                        </div>
+                        <div>
+                          <div className="text-white font-medium">{transaction.name}</div>
+                          <div className="text-sm text-gray-400">{transaction.type}</div>
+                        </div>
+                      </div>
+                      <div className="text-red-400 font-semibold">{transaction.amount}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-yellow-400 to-yellow-500">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -300,59 +352,64 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-              Ready to take control of your financial future?
+            <h2 className="text-3xl sm:text-4xl font-bold text-black mb-6">
+              Ready to master your finances?
             </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join thousands of users who are already mastering their finances with WealthPilot.
+            <p className="text-xl text-black/80 mb-8">
+              Join thousands of users who are already optimizing their financial life with WealthPilot.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-slate-100 transition-colors"
+              className="bg-black text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-900 transition-colors"
             >
-              Create Your Free Account
+              Start Your Free Trial
             </motion.button>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+      <footer className="bg-[#2a2a2a] text-white py-12 px-4 sm:px-6 lg:px-8 border-t border-[#3a3a3a]">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-2xl font-bold text-blue-400 mb-4">WealthPilot</h3>
-              <p className="text-slate-400">
-                Navigate your finances with confidence.
+              <div className="flex items-center mb-4">
+                <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-black font-bold">W</span>
+                </div>
+                <h3 className="text-2xl font-bold text-white">WealthPilot</h3>
+              </div>
+              <p className="text-gray-400">
+                Master your finances with intelligence.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
+              <h4 className="font-semibold mb-4 text-white">Product</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Features</a></li>
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Pricing</a></li>
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Security</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+              <h4 className="font-semibold mb-4 text-white">Company</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Contact</a></li>
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Careers</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Cookie Policy</a></li>
+              <h4 className="font-semibold mb-4 text-white">Legal</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-yellow-400 transition-colors">Cookie Policy</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
+          <div className="border-t border-[#3a3a3a] mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2024 WealthPilot. All rights reserved.</p>
           </div>
         </div>
