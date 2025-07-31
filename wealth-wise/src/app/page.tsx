@@ -318,9 +318,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
-      {/* Footer */}     
-      <Footer />
     </div>
   );
 }

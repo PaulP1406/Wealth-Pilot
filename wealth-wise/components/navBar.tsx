@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import Link from 'next/link';
 
 export default function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,7 +25,7 @@ export default function NavBar() {
 
                         {/* Sign In / Get Started - floats right */}
                         <div className="hidden md:flex items-center space-x-8 flex-shrink-0">
-                            <a href="#signin" className="text-gray-300 hover:text-yellow-400 transition-colors">Sign In</a>
+                            <a href="/signin" className="text-gray-300 hover:text-yellow-400 transition-colors">Sign In</a>
                             <button className="bg-yellow-400 text-black px-6 py-2 rounded-4xl hover:bg-yellow-500 transition-colors font-semibold">
                                 Get Started
                             </button>
