@@ -17,19 +17,19 @@ export default function NavBar() {
 
                         {/* nav bar for large screens */}
                         <div className="hidden md:flex items-center space-x-12 flex-1 justify-center">
-                            <a href="#features" className="text-gray-300 hover:text-yellow-400 transition-colors">Features</a>
-                            <a href="#dashboard" className="text-gray-300 hover:text-yellow-400 transition-colors">Dashboard</a>
-                            <a href="#pricing" className="text-gray-300 hover:text-yellow-400 transition-colors">Pricing</a>
+                            <Link href="#features" className="text-gray-300 hover:text-yellow-400 transition-colors">Features</Link>
+                            <Link href="#dashboard" className="text-gray-300 hover:text-yellow-400 transition-colors">Dashboard</Link>
+                            <Link href="#pricing" className="text-gray-300 hover:text-yellow-400 transition-colors">Pricing</Link>
                         </div>
 
                         {/* auth buttons for large screens */}
                         <div className="hidden md:flex items-center space-x-8 flex-shrink-0">
-                            <a href="/signin" className="text-gray-300 hover:text-yellow-400 transition-colors">Sign In</a>
-                            <a>
+                            <Link href="/auth/signin" className="text-gray-300 hover:text-yellow-400 transition-colors">Sign In</Link>
+                            <Link href="/auth/signup">
                                 <button className="bg-yellow-400 text-black px-6 py-2 rounded-4xl hover:bg-yellow-500 transition-colors font-semibold">
                                     Get Started
                                 </button>
-                            </a>                            
+                            </Link>
                         </div>
 
                         {/* Mobile menu button */}
