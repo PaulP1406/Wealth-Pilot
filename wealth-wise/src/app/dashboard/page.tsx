@@ -20,10 +20,14 @@ export default function Dashboard() {
         const getUser = async () => {
             const { data: { user }, error } = await supabase.auth.getUser();
             
-            if (error || !user) {
+            if (error || !user || !user.email) {
                 router.push('/auth/signin');
             } else {
-                setUser(user);
+                setUser({
+                    id: user.id,
+                    email: user.email,
+                    created_at: user.created_at
+                });
             }
             setLoading(false);
         };
