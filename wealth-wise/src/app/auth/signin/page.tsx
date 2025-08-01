@@ -3,23 +3,42 @@
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function SignInPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    async function signInUser() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const router = useRouter();
+
+    async function signInUser(e: React.FormEvent) {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password,
         });
+
+        if (error) {
+            setError(error.message);
+            setLoading(false);
+        } else {
+            // Redirect to dashboard on successful login
+            router.push('/dashboard');
+        }
     }
+
     return (
         <div className="min-h-screen bg-[#1a1a1a] flex">
             <div className="hidden md:block w-2/3 bg-white">
-                <a href = "/" className="flex items-left justify-left h-full mx-auto px-16 py-12">
+                <Link href="/" className="flex items-left justify-left h-full mx-auto px-16 py-12">
                     <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center mr-3">
                         <span className="text-black font-bold text-lg">W</span>
                     </div>  
-                </a>
+                </Link>
                 <img
                     src="/signin-illustration.svg"
                     alt="Sign In Illustration"
@@ -29,7 +48,14 @@ export default function SignInPage() {
             <div className="w-full md:w-1/3 flex items-center justify-center p-8">
                 <main className="w-full max-w-md bg-[#3a3a3a] rounded-xl shadow-lg p-8">
                     <h1 className="text-3xl flex justify-center font-bold text-white mb-6">Sign In</h1>
-                    <form className="space-y-6v flex flex-col items-center">
+                    
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-500/10 border border-red-500 text-red-500 rounded-lg text-sm">
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={signInUser} className="space-y-6 flex flex-col items-center">
                         <div className="w-full mt-4">
                             <label htmlFor="email" className="block text-white font-medium mb-2">
                                 Email address
@@ -38,6 +64,7 @@ export default function SignInPage() {
                                 type="email"
                                 id="email"
                                 name="email"
+                                value={email}
                                 required
                                 className="w-full h-16 px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400"
                                 placeholder="you@example.com"
@@ -52,6 +79,7 @@ export default function SignInPage() {
                                 type="password"
                                 id="password"
                                 name="password"
+                                value={password}
                                 required
                                 className="w-full h-16 px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400"
                                 placeholder="••••••••"
@@ -90,18 +118,18 @@ export default function SignInPage() {
                         
                         <button
                             type="submit"
-                            className="w-36 mx-auto mt-8 bg-yellow-400 text-black font-semibold py-2 rounded-4xl hover:bg-yellow-500 transition-colors"
-                            onClick={signInUser}
+                            disabled={loading}
+                            className="w-36 mx-auto mt-8 bg-yellow-400 text-black font-semibold py-2 rounded-4xl hover:bg-yellow-500 transition-colors disabled:opacity-50"
                         >
-                            Sign In
+                            {loading ? 'Signing In...' : 'Sign In'}
                         </button>                    
                     </form>
                     
                     <div className="mt-6 text-center text-white">
                         Don't have an account?{' '}
-                        <a href="/signup" className="text-yellow-500 hover:underline">
+                        <Link href="/auth/signup" className="text-yellow-500 hover:underline">
                             Sign Up
-                        </a>
+                        </Link>
                     </div>
                 </main>
             </div>
