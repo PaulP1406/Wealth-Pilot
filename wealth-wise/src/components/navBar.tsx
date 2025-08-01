@@ -9,26 +9,27 @@ export default function NavBar() {
             <nav className="fixed top-0 w-full bg-[#1a1a1a]/80 backdrop-blur-md z-50">
                 <div className="max-w-10xl lg:mx-24 mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-24 w-full">
-                        {/* Logo - floats left */}
                         <div className="flex items-center flex-shrink-0">
                             <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center mr-3">
                                 <span className="text-black font-bold text-lg">W</span>
                             </div>
                         </div>
 
-                        {/* Desktop Navigation - centered */}
+                        {/* nav bar for large screens */}
                         <div className="hidden md:flex items-center space-x-12 flex-1 justify-center">
                             <a href="#features" className="text-gray-300 hover:text-yellow-400 transition-colors">Features</a>
                             <a href="#dashboard" className="text-gray-300 hover:text-yellow-400 transition-colors">Dashboard</a>
                             <a href="#pricing" className="text-gray-300 hover:text-yellow-400 transition-colors">Pricing</a>
                         </div>
 
-                        {/* Sign In / Get Started - floats right */}
+                        {/* auth buttons for large screens */}
                         <div className="hidden md:flex items-center space-x-8 flex-shrink-0">
                             <a href="/signin" className="text-gray-300 hover:text-yellow-400 transition-colors">Sign In</a>
-                            <button className="bg-yellow-400 text-black px-6 py-2 rounded-4xl hover:bg-yellow-500 transition-colors font-semibold">
-                                Get Started
-                            </button>
+                            <a>
+                                <button className="bg-yellow-400 text-black px-6 py-2 rounded-4xl hover:bg-yellow-500 transition-colors font-semibold">
+                                    Get Started
+                                </button>
+                            </a>                            
                         </div>
 
                         {/* Mobile menu button */}
