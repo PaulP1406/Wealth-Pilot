@@ -1,4 +1,17 @@
+'use client';
+
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { useState } from 'react';
 export default function SignInPage() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    async function signInUser() {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        });
+    }
     return (
         <div className="min-h-screen bg-[#1a1a1a] flex">
             <div className="hidden md:block w-2/3 bg-white">
@@ -28,6 +41,7 @@ export default function SignInPage() {
                                 required
                                 className="w-full h-16 px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400"
                                 placeholder="you@example.com"
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <div className="w-full mt-8">
@@ -41,6 +55,7 @@ export default function SignInPage() {
                                 required
                                 className="w-full h-16 px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400"
                                 placeholder="••••••••"
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
                         
@@ -76,6 +91,7 @@ export default function SignInPage() {
                         <button
                             type="submit"
                             className="w-36 mx-auto mt-8 bg-yellow-400 text-black font-semibold py-2 rounded-4xl hover:bg-yellow-500 transition-colors"
+                            onClick={signInUser}
                         >
                             Sign In
                         </button>                    
