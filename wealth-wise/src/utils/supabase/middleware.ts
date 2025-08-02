@@ -53,7 +53,7 @@ export async function updateSession(request: NextRequest) {
   if (user && (request.nextUrl.pathname === '/auth/signin' || request.nextUrl.pathname === '/auth/signup')) {
     // If the user is authenticated and tries to access the sign-in or sign-up page, redirect them to the private page
     const url = request.nextUrl.clone()
-    url.pathname = '/private'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
   // Only redirect unauthenticated users trying to access private routes
