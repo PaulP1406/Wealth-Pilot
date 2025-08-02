@@ -37,14 +37,27 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/auth/signin') &&
-    !request.nextUrl.pathname.startsWith('/auth/confirm') &&
-    !request.nextUrl.pathname.startsWith('/auth/signup') 
-  ) 
-  {
-    // no user, potentially respond by redirecting the user to the login page
+ const publicRoutes = [
+    '/',
+    '/auth/signin',
+    '/auth/signup',
+    '/auth/confirm',
+    '/error'
+  ]
+
+  const isPublicRoute = publicRoutes.some(route => 
+    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route)
+  )
+
+  // redirect to dashboard if user is already logged in
+  if (user && (request.nextUrl.pathname === '/auth/signin' || request.nextUrl.pathname === '/auth/signup')) {
+    // If the user is authenticated and tries to access the sign-in or sign-up page, redirect them to the private page
+    const url = request.nextUrl.clone()
+    url.pathname = '/private'
+    return NextResponse.redirect(url)
+  }
+  // Only redirect unauthenticated users trying to access private routes
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/auth/signin'
     return NextResponse.redirect(url)
