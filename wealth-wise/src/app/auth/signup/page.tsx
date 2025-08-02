@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
+import {signup} from './action';
+
 export default function SignInPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -64,9 +66,8 @@ export default function SignInPage() {
                                                 
                         <button
                             type="submit"
-                            onClick={signUpNewUser}
                             className="w-36 mx-auto mt-8 bg-yellow-400 text-black font-semibold py-2 rounded-4xl hover:bg-yellow-500 transition-colors"
-                            
+                            formAction={signup}
                         >
                             Sign Up
                         </button>                    
