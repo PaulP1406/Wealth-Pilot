@@ -8,6 +8,7 @@ import { RecentTransactionsCard } from '@/components/dashboard/recent_transactio
 export default async function DashBoard() {
   const supabase = await createClient()
 
+  // Auth related logic
   const { data, error } = await supabase.auth.getUser()
   if (error || !data?.user) {
     redirect('/auth/signin')
@@ -22,12 +23,33 @@ export default async function DashBoard() {
     redirect('/')
   }
 
-  // Sample data
-  const accounts = [
-    { name: "Main source of capital", balance: "$21,487.16", account: "4141", active: true },
-    { name: "Additional source of capital", balance: "$9,678.00", account: "6721 VISA", active: true },
-    { name: "Additional source of capital", balance: "$3,644.73", account: "5995 VISA", active: true }
-  ];
+  // Accounts data fetching
+  const { data: accountsData, error: accountError } = await supabase
+    .from('accounts')
+    .select('*')
+    .eq('user_id', user.id)
+  if (accountError) {
+    console.error('Error fetching account data:', accountError)
+    return <div>Error loading account data</div>
+  }
+  console.log('User ID:', user.id);
+  console.log('Accounts Data:', accountsData);
+  
+
+  const totalBalance = accountsData.reduce(
+  (sum, account) => sum + Number(account.balance ?? 0),
+    0
+  );
+
+  const balanceString = `$${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const accounts = accountsData?.map(account => ({
+    name: account.name,
+    balance: `$${Number(account.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    account: account.account ?? '', 
+    active: true
+  })) ?? [];
+
 
   const transactions = [
     { name: "Maria Charles", type: "Card transfer", amount: "-$100.00", icon: "👤", isPositive: false },
@@ -35,6 +57,8 @@ export default async function DashBoard() {
     { name: "Uber", type: "Transport", amount: "-$56.00", icon: "🚗", isPositive: false },
     { name: "Netflix", type: "Entertainment", amount: "-$19.99", icon: "📺", isPositive: false }
   ];
+
+  
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white">
@@ -69,7 +93,7 @@ export default async function DashBoard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Balance */}
           <div className="lg:col-span-2">
-            <BalanceCard balance="$34,809.89" accounts={accounts} />
+            <BalanceCard balance={balanceString} accounts={accounts} />
           </div>
 
           {/* Right Column - Payments and Expenses */}
