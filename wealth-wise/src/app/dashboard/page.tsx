@@ -1,9 +1,13 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { BalanceCard } from '@/components/dashboard/balance_card'
 import { UpcomingPaymentsCard } from '@/components/dashboard/upcoming_payments'
 import { ExpensesCard } from '@/components/dashboard/expenses_chart'
 import { RecentTransactionsCard } from '@/components/dashboard/recent_transactions'
+
+// overlay components
+import Overlay from '@/components/reusable/overlay'
 
 export default async function DashBoard() {
   const supabase = await createClient()
@@ -94,6 +98,12 @@ export default async function DashBoard() {
           {/* Left Column - Balance */}
           <div className="lg:col-span-2">
             <BalanceCard balance={balanceString} accounts={accounts} />
+            <Link
+              href="/dashboard?modal=add-account"
+              className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Add Account
+            </Link>
           </div>
 
           {/* Right Column - Payments and Expenses */}
