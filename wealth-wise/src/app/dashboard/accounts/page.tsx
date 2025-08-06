@@ -3,6 +3,13 @@ import { createClient } from '@/utils/supabase/client'
 import { redirect } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
 
+// Components
+import { AccountTable } from '@/components/dashboard/accounts/account_table'
+import { EmptyAccountsState } from '@/components/dashboard/accounts/empty_state'
+import { AccountHeader } from '@/components/dashboard/accounts/header'
+import { SummaryCards } from '@/components/dashboard/accounts/summary_cards'
+import { UserInfoCard } from '@/components/dashboard/accounts/user_info'
+
 export default async function AccountManagementPage() {
     const [loading, setLoading] = useState(false)
     const supabase = createClient()
