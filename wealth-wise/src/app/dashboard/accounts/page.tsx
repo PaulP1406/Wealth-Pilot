@@ -10,7 +10,7 @@ import { AccountHeader } from '@/components/dashboard/accounts/header'
 import { SummaryCards } from '@/components/dashboard/accounts/summary_cards'
 import { UserInfoCard } from '@/components/dashboard/accounts/user_info'
 
-export default async function AccountManagementPage() {
+export default function AccountManagementPage() {
     const [loading, setLoading] = useState(false)
     const supabase = createClient()
 
@@ -39,9 +39,15 @@ export default async function AccountManagementPage() {
     }, [supabase])
     
     return (
-        <div>
-        <h1>Account Management</h1>
-        {loading && <p>Loading...</p>}
-        </div>
+        <div className="min-h-screen bg-[#1a1a1a] text-white">
+        <AccountHeader />
+        
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <SummaryCards />
+            <AccountTable />
+            {/* Or use <EmptyAccountsState /> if no accounts */}
+            <UserInfoCard />
+        </main>
+    </div>
     )
 }
