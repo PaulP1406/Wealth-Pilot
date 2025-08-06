@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
+
 interface AddAccountFormProps {
   userId: string;
   onClose: () => void;
@@ -22,12 +23,14 @@ export default function AddAccountForm({ userId, onClose }: AddAccountFormProps)
     const formData = new FormData(e.currentTarget)
     const supabase = createClient()
 
-    const { error } = await supabase.from('accounts').insert({
-      user_id: userId,
-      name: formData.get('name') as string,
-      balance: Number(formData.get('balance')),
-      account: formData.get('account') as string
-    })
+    const { error } = await supabase
+        .from('accounts')
+        .insert({
+            user_id: userId,
+            name: formData.get('name') as string,
+            balance: Number(formData.get('balance')),
+        }
+        )
 
     if (error) {
       setError(error.message)

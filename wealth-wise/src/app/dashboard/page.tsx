@@ -1,3 +1,4 @@
+
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
@@ -7,9 +8,11 @@ import { ExpensesCard } from '@/components/dashboard/expenses_chart'
 import { RecentTransactionsCard } from '@/components/dashboard/recent_transactions'
 
 // overlay components
-import Overlay from '@/components/reusable/overlay'
+import AddAccountModal from '@/components/dashboard/AddAccountModal'
 
-export default async function DashBoard() {
+export default async function DashBoard(
+  { searchParams }: { searchParams: { modal?: string } }
+) {
   const supabase = await createClient()
 
   // Auth related logic
@@ -19,6 +22,7 @@ export default async function DashBoard() {
   }
 
   const user = data.user
+  const isAccountModalOpen = searchParams.modal === 'add-account' // check if the overlay should be open based on URL
 
   const handleSignOut = async () => {
     'use server'
@@ -104,6 +108,7 @@ export default async function DashBoard() {
             >
               Add Account
             </Link>
+            
           </div>
 
           {/* Right Column - Payments and Expenses */}
@@ -136,6 +141,8 @@ export default async function DashBoard() {
           </div>
         </div>
       </main>
+      <AddAccountModal isOpen={isAccountModalOpen} userId={user.id} />
     </div>
   )
 }
+
