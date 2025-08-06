@@ -10,7 +10,17 @@ import { AccountHeader } from '@/components/dashboard/accounts/header'
 import { SummaryCards } from '@/components/dashboard/accounts/summary_cards'
 import { UserInfoCard } from '@/components/dashboard/accounts/user_info'
 
-export default function AccountManagementPage() {
+interface BalanceCardProps {
+  balance: string;
+  accounts: Array<{
+    name: string;
+    balance: string;
+    account: string;
+    active: boolean;
+  }>;
+}
+
+export default function AccountManagementPage({ balance, accounts }: BalanceCardProps) {
     const [loading, setLoading] = useState(false)
     const supabase = createClient()
 
@@ -38,13 +48,14 @@ export default function AccountManagementPage() {
         fetchUser()
     }, [supabase])
     
+    
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
         <AccountHeader />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <SummaryCards />
-            <AccountTable />
+            <SummaryCards balance={balance} accounts={accounts} />
+            <AccountTable balance={balance} accounts={accounts} />
             {/* Or use <EmptyAccountsState /> if no accounts */}
             <UserInfoCard />
         </main>

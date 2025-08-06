@@ -1,11 +1,20 @@
-export function SummaryCards() {
+interface BalanceCardProps {
+  balance?: string;
+  accounts?: Array<{
+    name: string;
+    balance: string;
+    account: string;
+    active: boolean;
+  }>;
+}
+export function SummaryCards({ balance, accounts }: BalanceCardProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div className="bg-[#2a2a2a] rounded-xl p-6 border border-gray-700">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-sm">Total Accounts</p>
-            <p className="text-2xl font-bold text-white">3</p>
+            <p className="text-2xl font-bold text-white">{accounts?.length || 0}</p>
           </div>
           <div className="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
             <span className="text-yellow-400 text-xl">🏦</span>
@@ -17,7 +26,7 @@ export function SummaryCards() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-sm">Total Balance</p>
-            <p className="text-2xl font-bold text-white">$34,809.89</p>
+            <p className="text-2xl font-bold text-white">{balance}</p>
           </div>
           <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
             <span className="text-green-400 text-xl">💰</span>

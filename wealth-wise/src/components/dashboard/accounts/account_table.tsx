@@ -1,4 +1,14 @@
-export function AccountTable() {
+interface AccountTableProps {
+  balance: string;
+  accounts: Array<{
+    name: string;
+    balance: string;
+    account: string;
+    active: boolean;
+  }>;
+}
+
+export function AccountTable({ balance, accounts }: AccountTableProps) {
   return (
     <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-700">
