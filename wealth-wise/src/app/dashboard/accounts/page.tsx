@@ -2,6 +2,7 @@
 import { createClient } from '@/utils/supabase/client'
 import { redirect } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
+import type { User } from '@supabase/supabase-js'
 
 // Components
 import { AccountTable } from '@/components/dashboard/accounts/account_table'
@@ -10,52 +11,65 @@ import { AccountHeader } from '@/components/dashboard/accounts/header'
 import { SummaryCards } from '@/components/dashboard/accounts/summary_cards'
 import { UserInfoCard } from '@/components/dashboard/accounts/user_info'
 
-interface BalanceCardProps {
-  balance: string;
-  accounts: Array<{
+type Account = {
+    id: string;
     name: string;
-    balance: string;
-    account: string;
-    active: boolean;
-  }>;
-}
+    balance: number;
+    account?: string;
+};
 
-export default function AccountManagementPage({ balance, accounts }: BalanceCardProps) {
+export default function AccountManagementPage() {
     const [loading, setLoading] = useState(false)
+    
+
+    const [user, setUser] = useState<User | undefined>()
+    const [accountsData, setAccountsData] = useState<Account[]>([])
     const supabase = createClient()
 
-    let user = null
-
     useEffect(() => {
-        const fetchUser = async () => {
-        const { data, error } = await supabase.auth.getUser()
-        if (error || !data?.user) {
-            redirect('/auth/signin')
-        }
-            user = data.user
-        }
         const fetchData = async () => {
-        setLoading(true)
-        const { data, error } = await supabase
-            .from('accounts')
-            .select('*')
-        if (error) {
-            console.error('Error fetching accounts:', error)
+            const { data: userData, error } = await supabase.auth.getUser()
+            if (error || !userData?.user) {
+                redirect('/auth/signin')
+                return
+            }
+            setUser(userData.user)            
+            setLoading(true)        
+            const { data, error: accountsError } = await supabase
+                .from('accounts')
+                .select('*')
+                .eq('user_id', userData.user.id)
+            if (accountsError) {
+                console.error('Error fetching accounts:', accountsError)
+            }            
+            setAccountsData(data || []) // if data if not empty array
+            setLoading(false)
         }
-        setLoading(false)
-        }
-        fetchData()
-        fetchUser()
+        fetchData()        
     }, [supabase])
-    
-    
+
+    const totalBalance = accountsData.reduce(
+    (sum, account) => sum + Number(account.balance ?? 0),
+        0
+    );
+
+    const balanceString = `$${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    const accounts = accountsData?.map(account => ({
+        name: account.name,
+        balance: `$${Number(account.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        account: account.account ?? '', 
+        active: true
+    })) ?? [];
+
+    const accountsExist = accounts.length || 0;
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
         <AccountHeader />
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <SummaryCards balance={balance} accounts={accounts} />
-            <AccountTable balance={balance} accounts={accounts} />
+            <SummaryCards balance={balanceString} accounts={accounts} />
+            <AccountTable balance={balanceString} accounts={accounts} />
             {/* Or use <EmptyAccountsState /> if no accounts */}
             <UserInfoCard />
         </main>
