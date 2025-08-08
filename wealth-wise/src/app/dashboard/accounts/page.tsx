@@ -27,6 +27,19 @@ export default function AccountManagementPage() {
     const [accountsData, setAccountsData] = useState<Account[]>([])
     const supabase = createClient()
 
+    const fetchAccountsData = async (userId: string) => {
+        setLoading(true)        
+        const { data, error: accountsError } = await supabase
+            .from('accounts')
+            .select('*')
+            .eq('user_id', userId)
+        if (accountsError) {
+            console.error('Error fetching accounts:', accountsError)
+        }            
+        setAccountsData(data || []) // if data if not empty array
+        setLoading(false)
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             const { data: userData, error } = await supabase.auth.getUser()
@@ -35,16 +48,7 @@ export default function AccountManagementPage() {
                 return
             }
             setUser(userData.user)            
-            setLoading(true)        
-            const { data, error: accountsError } = await supabase
-                .from('accounts')
-                .select('*')
-                .eq('user_id', userData.user.id)
-            if (accountsError) {
-                console.error('Error fetching accounts:', accountsError)
-            }            
-            setAccountsData(data || []) // if data if not empty array
-            setLoading(false)
+            await fetchAccountsData(userData.user.id)
         }
         fetchData()        
     }, [supabase])
@@ -65,6 +69,12 @@ export default function AccountManagementPage() {
 
     const accountsExist = accounts.length || 0;
     
+    const handleAccountAdded = async () => {
+        if (user?.id) {
+            await fetchAccountsData(user.id);
+        }
+    };
+    
     const deleteAccount = async (accountId: string) => {
         if (!user?.id) return;
         setLoading(true);
@@ -78,7 +88,7 @@ export default function AccountManagementPage() {
         } else {
             setAccountsData(accountsData.filter(account => account.id !== accountId));
         }
-        console.log('im here')
+        fetchAccountsData(user.id);        
         setLoading(false);
     }
     return (
@@ -86,7 +96,13 @@ export default function AccountManagementPage() {
         <AccountHeader balance={balanceString} isAddingOpen={isAddingOpen} />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <SummaryCards balance={balanceString} accounts={accounts} />
-            <AccountTable balance={balanceString} accounts={accounts} onDeleteAccount={deleteAccount} userID={user?.id ?? ''} />
+            <AccountTable 
+                balance={balanceString} 
+                accounts={accounts} 
+                onDeleteAccount={deleteAccount} 
+                userID={user?.id ?? ''} 
+                onAccountAdded={handleAccountAdded}
+            />
             {/* Or use <EmptyAccountsState /> if no accounts */}
             <UserInfoCard />
         </main>

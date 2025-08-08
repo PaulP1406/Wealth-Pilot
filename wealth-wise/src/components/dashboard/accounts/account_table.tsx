@@ -10,9 +10,10 @@ interface AccountTableProps {
   }>;
   onDeleteAccount: (name: string) => void;
   userID: string;
+  onAccountAdded?: () => void;
 }
 
-export function AccountTable({ balance, accounts, onDeleteAccount, userID }: AccountTableProps) {
+export function AccountTable({ balance, accounts, onDeleteAccount, userID, onAccountAdded }: AccountTableProps) {
   const [accountAdding, setAccountAdding] = useState(false);
   const [accountAddingName, setAccountAddingName] = useState('');
   const [accountAddingBalance, setAccountAddingBalance] = useState('');
@@ -33,7 +34,18 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
         )
 
     if (error) {
+      console.error('Error adding account:', error);
       return
+    }
+    
+    // Clear form and close adding mode
+    setAccountAddingName('');
+    setAccountAddingBalance('');
+    setAccountAdding(false);
+    
+    // Trigger refresh of accounts data
+    if (onAccountAdded) {
+      onAccountAdded();
     }
   }
   return (
