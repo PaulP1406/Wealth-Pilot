@@ -38,11 +38,11 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
   }
   return (
     <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-700">
+      <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
         <h2 className="text-xl font-semibold text-white">Your Accounts</h2>
         <button
-          className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg transition-colors text-sm font-medium mt-2"
-          onClick={() => setAccountAdding(!accountAdding)}
+          className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+          onClick={() => setAccountAdding(!accountAdding)}  
         >
           {accountAdding ? 'Cancel' : 'Add Account'}
         </button>
@@ -93,6 +93,7 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
             ))}
  
             {/* Adding Account Row */}
+            {accountAdding && (
             <tr className="hover:bg-[#3a3a3a] transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -134,6 +135,7 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
                   </div>
                 </td>
               </tr>
+            )}
           </tbody>
         </table>
       </div>
