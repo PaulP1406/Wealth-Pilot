@@ -26,7 +26,8 @@ export default function AccountManagementPage() {
     const [user, setUser] = useState<User | undefined>()
     const [accountsData, setAccountsData] = useState<Account[]>([])
     const supabase = createClient()
-
+    
+    // Function to fetch accounts data, to be called after user is set, or accounts are modified.
     const fetchAccountsData = async (userId: string) => {
         setLoading(true)        
         const { data, error: accountsError } = await supabase
@@ -41,6 +42,7 @@ export default function AccountManagementPage() {
     }
 
     useEffect(() => {
+        // configure auth first
         const fetchData = async () => {
             const { data: userData, error } = await supabase.auth.getUser()
             if (error || !userData?.user) {
