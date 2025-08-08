@@ -4,9 +4,11 @@ interface AccountTableProps {
     name: string;
     balance: string;
   }>;
+  onDeleteAccount: (name: string) => void;
 }
 
-export function AccountTable({ balance, accounts }: AccountTableProps) {
+export function AccountTable({ balance, accounts, onDeleteAccount }: AccountTableProps) {
+
   return (
     <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-700">
@@ -49,7 +51,7 @@ export function AccountTable({ balance, accounts }: AccountTableProps) {
                     <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors">
                       Edit
                     </button>
-                    <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                    <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors" onClick={() => onDeleteAccount(account.name)}>
                       Delete
                     </button>
                   </div>
