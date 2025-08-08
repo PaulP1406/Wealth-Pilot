@@ -63,10 +63,17 @@ export default function AccountManagementPage() {
     })) ?? [];
 
     const accountsExist = accounts.length || 0;
+    console.log('Accounts:', accounts)
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
         <AccountHeader />
-        
+
+        <div>{accounts.map(account => (
+            <div key={account.name}>
+                <h3>{account.name}</h3>
+                <p>Balance: {account.balance}</p>
+            </div>
+        ))}</div>
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <SummaryCards balance={balanceString} accounts={accounts} />
             <AccountTable balance={balanceString} accounts={accounts} />
