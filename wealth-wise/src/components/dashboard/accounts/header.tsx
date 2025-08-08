@@ -1,8 +1,9 @@
 interface AccountHeaderProps {
   balance: string;
+  isAddingOpen: boolean;
 }
 
-export function AccountHeader({balance}: AccountHeaderProps) {
+export function AccountHeader({balance, isAddingOpen}: AccountHeaderProps) {
   return (
     <header className="bg-[#2a2a2a] border-b border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
