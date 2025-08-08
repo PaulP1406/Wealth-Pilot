@@ -82,7 +82,7 @@ export default function AccountManagementPage() {
     }
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
-        <AccountHeader />
+        <AccountHeader balance={balanceString} />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <SummaryCards balance={balanceString} accounts={accounts} />
             <AccountTable balance={balanceString} accounts={accounts} onDeleteAccount={deleteAccount} />
