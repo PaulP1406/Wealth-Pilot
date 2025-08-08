@@ -14,8 +14,16 @@ interface AccountTableProps {
 
 export function AccountTable({ balance, accounts, onDeleteAccount, userID }: AccountTableProps) {
   const [accountAdding, setAccountAdding] = useState(false);
+  const [accountAddingName, setAccountAddingName] = useState('');
+  const [accountAddingBalance, setAccountAddingBalance] = useState('');
+
   const supabase = createClient()
-  const { error } = await supabase
+  const handleAddAccount = async () => {
+    if (!accountAddingName || !accountAddingBalance) {
+      alert('Please fill in all fields');
+      return
+    }
+    const { error } = await supabase
         .from('accounts')
         .insert({
             user_id: userID,
@@ -25,11 +33,19 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
         )
 
     if (error) {
-      setError(error.message)
+      return
+    }
+  }
   return (
     <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-700">
         <h2 className="text-xl font-semibold text-white">Your Accounts</h2>
+        <button
+          className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg transition-colors text-sm font-medium mt-2"
+          onClick={() => setAccountAdding(!accountAdding)}
+        >
+          {accountAdding ? 'Cancel' : 'Add Account'}
+        </button>
       </div>
 
       <div className="overflow-x-auto">
@@ -75,6 +91,8 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
                 </td>
               </tr>
             ))}
+ 
+            {/* Adding Account Row */}
             <tr className="hover:bg-[#3a3a3a] transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -87,6 +105,8 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
                           type="text"
                           className="bg-transparent border-b border-gray-600 focus:outline-none focus:border-yellow-500"
                           placeholder="Account Name"
+                          onChange={(e) => setAccountAddingName(e.target.value)}
+                          value={accountAddingName}
                         />
                       </div>
                     </div>
@@ -98,12 +118,14 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID }: Acc
                       type="number"
                       className="bg-transparent border-b border-gray-600 focus:outline-none focus:border-yellow-500"
                       placeholder="Balance"
+                      onChange={(e) => setAccountAddingBalance(e.target.value)}
+                      value={accountAddingBalance}
                     />
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <div className="flex space-x-2">
-                    <button className="bg-green-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                    <button className="bg-green-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors" onClick={handleAddAccount}>
                       Confirm
                     </button>
                     <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors" onClick={() => setAccountAdding(false)}>
