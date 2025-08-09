@@ -3,16 +3,18 @@ interface AccountHeaderProps {
   isAddingOpen: boolean;
 }
 
+import Router from "next/router";
+import Link from "next/link";
 export function AccountHeader({balance, isAddingOpen}: AccountHeaderProps) {
   return (
     <header className="bg-[#2a2a2a] border-b border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
-            <button className="flex items-center space-x-2 text-gray-300 hover:text-white">
+            <Link href="/dashboard" className="flex items-center space-x-2 text-gray-300 hover:text-white">
               <span>←</span>
               <span>Back to Dashboard</span>
-            </button>
+            </Link>
             <div className="w-px h-6 bg-gray-600"></div>
             <h1 className="text-xl font-semibold">Account Management</h1>
           </div>
