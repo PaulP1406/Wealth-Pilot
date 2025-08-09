@@ -17,6 +17,7 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID, onAcc
   const [accountAdding, setAccountAdding] = useState(false);
   const [accountAddingName, setAccountAddingName] = useState('');
   const [accountAddingBalance, setAccountAddingBalance] = useState('');
+  const [currentEditingAccount, setCurrentEditingAccount] = useState<{ name: string, index: number, balance: number } | null>(null);
 
   const supabase = createClient()
   const handleAddAccount = async () => {
@@ -48,6 +49,28 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID, onAcc
       onAccountAdded();
     }
   }
+
+  const handleEditAccount = async (account: { name: string; balance: string }) => {
+    const { error } = await supabase
+      .from('accounts')
+      .update({
+        name: account.name,
+        balance: Number(account.balance),
+      })
+      .eq('user_id', userID)
+      .eq('name', account.name);
+
+    if (error) {
+      console.error('Error editing account:', error);
+      return;
+    }
+
+    // Trigger refresh of accounts data
+    if (onAccountAdded) {
+      onAccountAdded();
+    }
+  }
+
   return (
     <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
@@ -77,6 +100,7 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID, onAcc
           </thead>
           <tbody className="divide-y divide-gray-700">
             {accounts.map((account, index) => (
+              
               <tr className="hover:bg-[#3a3a3a] transition-colors" key={account.name}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -84,21 +108,72 @@ export function AccountTable({ balance, accounts, onDeleteAccount, userID, onAcc
                       <span className="text-yellow-400 font-bold">M</span>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-white">{account.name}</div>
+                      {currentEditingAccount?.index === index ? (
+                        <input
+                          type="text"
+                          className="bg-transparent border-b border-gray-600 focus:outline-none focus:border-yellow-500"
+                          value={currentEditingAccount.name}
+                          onChange={(e) => setCurrentEditingAccount({ ...currentEditingAccount, name: e.target.value })}
+                        />
+                      ) : (
+                        <div className="text-sm font-medium text-white">{account.name}</div>
+                      )}
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-medium text-white">{account.balance}</span>
+                  {currentEditingAccount?.index === index ? (
+                    <input
+                      type="number"
+                      className="bg-transparent border-b border-gray-600 focus:outline-none focus:border-yellow-500"
+                      value={currentEditingAccount.balance}
+                      onChange={(e) => setCurrentEditingAccount({ ...currentEditingAccount, balance: Number(e.target.value) })}
+                    />
+                  ) : (
+                    <span className="text-sm font-medium text-white">{account.balance}</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   <div className="flex space-x-2">
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors">
-                      Edit
-                    </button>
-                    <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors" onClick={() => onDeleteAccount(account.name)}>
-                      Delete
-                    </button>
+                    {currentEditingAccount?.index === index ? (
+                    <>
+                      <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors"
+                        onClick={async () => {
+                          await handleEditAccount({
+                            name: currentEditingAccount.name,
+                            balance: String(currentEditingAccount.balance)
+                          });
+                          setCurrentEditingAccount(null); // Exit editing mode after save
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-xs transition-colors"
+                        onClick={() => setCurrentEditingAccount(null)}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                    ) : (
+                      <>                      
+                        <button
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors"
+                          onClick={() => setCurrentEditingAccount({
+                            name: account.name,
+                            index,
+                            balance: parseFloat(account.balance.replace(/[$,]/g, '')) || 0
+                          })}
+                        >
+                          Edit
+                        </button>
+                        <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors" onClick={() => onDeleteAccount(account.name)}>
+                          Delete
+                        </button>
+                      </>
+                    )}
+                    
                   </div>
                 </td>
               </tr>
