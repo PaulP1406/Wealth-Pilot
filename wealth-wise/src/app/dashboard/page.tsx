@@ -102,13 +102,6 @@ export default async function DashBoard(
           {/* Left Column - Balance */}
           <div className="lg:col-span-2">
             <BalanceCard balance={balanceString} accounts={accounts} />
-            <Link
-              href="/dashboard?modal=add-account"
-              className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Add Account
-            </Link>
-            
           </div>
 
           {/* Right Column - Payments and Expenses */}
