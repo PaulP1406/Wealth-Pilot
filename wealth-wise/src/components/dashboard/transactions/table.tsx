@@ -1,4 +1,23 @@
+'use client'
+import { createClient } from "@/utils/supabase/client"
+import { useState, useEffect } from "react"
+
 export default function TransactionsTable() {
+    const supabase = createClient()
+    const [transactions, setTransactions] = useState([])
+
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            const { data, error } = await supabase.from("transactions").select("*")
+            if (error) {
+                console.error("Error fetching transactions:", error)
+            } else {
+                setTransactions(data)
+            }
+        }
+        fetchTransactions()
+    }, [supabase])
+
     const sampleTransactions = [
         {
             date: "Dec 15, 2024",
