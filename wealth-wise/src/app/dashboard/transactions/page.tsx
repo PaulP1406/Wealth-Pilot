@@ -18,6 +18,7 @@ interface Transaction {
     date: string
     category: string
     accountID: string
+    accountName: string
 }
 export default function TransactionsPage() {
     const [user, setUser] = useState<User | undefined>()
@@ -75,8 +76,8 @@ export default function TransactionsPage() {
                 />
                 
                 <TransactionsSummary />
-                
-                <TransactionsTable />
+
+                <TransactionsTable transactions={transactionsData} />
             </main>
         </div>
     )
