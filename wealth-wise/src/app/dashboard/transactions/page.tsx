@@ -1,10 +1,10 @@
 'use client'
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import TransactionsHeader from '@/components/dashboard/transactions/TransactionsHeader'
-import TransactionsFilters from '@/components/dashboard/transactions/TransactionsFilters'
-import TransactionsSummary from '@/components/dashboard/transactions/TransactionsSummary'
-import TransactionsTable from '@/components/dashboard/transactions/TransactionsTable'
+import TransactionsHeader from '@/components/dashboard/transactions/header'
+import TransactionsFilters from '@/components/dashboard/transactions/filters'
+import TransactionsSummary from '@/components/dashboard/transactions/summary'
+import TransactionsTable from '@/components/dashboard/transactions/table'
 
 export default function TransactionsPage() {
     const [loading, setLoading] = useState(false)
