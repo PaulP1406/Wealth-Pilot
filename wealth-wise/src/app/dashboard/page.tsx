@@ -1,4 +1,3 @@
-
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
@@ -22,7 +21,9 @@ export default async function DashBoard(
   }
 
   const user = data.user
-  const isAccountModalOpen = searchParams.modal === 'add-account' // check if the overlay should be open based on URL
+  // Await searchParams before using its properties
+  const params = await searchParams;
+  const isAccountModalOpen = params.modal === 'add-account'; // check if the overlay should be open based on URL
 
   const handleSignOut = async () => {
     'use server'
