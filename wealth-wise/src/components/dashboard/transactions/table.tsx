@@ -72,7 +72,7 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
         }
         return colors[color as keyof typeof colors]
     }
-
+    console.log('Transactions:', transactions)
     return (
         <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-700">
@@ -147,7 +147,7 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
                                 </td>
                             </tr>
                         ))}
-                        {sampleTransactions.map((transaction, index) => (
+                        {transactions.map((transaction, index) => (
                             <tr key={index} className="hover:bg-[#3a3a3a] transition-colors">
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                                     {transaction.date}
@@ -156,12 +156,12 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
                                     <div className="flex items-center">
                                         <div className={`w-8 h-8 ${getCategoryColorClasses(transaction.categoryColor).split(' ')[0]} rounded-lg flex items-center justify-center mr-3`}>
                                             <span className={`text-sm ${getCategoryColorClasses(transaction.categoryColor).split(' ')[1]}`}>
-                                                {transaction.icon}
+                                                🚗
                                             </span>
                                         </div>
                                         <div>
                                             <div className="text-sm font-medium text-white">{transaction.title}</div>
-                                            <div className="text-sm text-gray-400">{transaction.subtitle}</div>
+                                            <div className="text-sm text-gray-400">{transaction.subTitle}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -171,7 +171,7 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {transaction.account}
+                                    {transaction.accountName}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <span className={getAmountColorClasses(transaction.amountColor)}>
