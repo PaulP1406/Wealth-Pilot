@@ -7,9 +7,13 @@ interface TransactionProps {
         id: string
         user_id: string
         title: string
+        subTitle: string
         amount: number
+        amountColor: string
         date: string
         category: string
+        categoryID: string
+        categoryColor: string
         accountID: string
         accountName: string
     }[]
