@@ -11,7 +11,7 @@ interface TransactionProps {
         amount: number
         amountColor: string
         date: string
-        category: string
+        categoryName: string
         categoryID: string
         categoryColor: string
         accountID: string
@@ -124,7 +124,7 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium`}>
-                                        {transaction.category}
+                                        {transaction.categoryName}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
@@ -167,7 +167,7 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColorClasses(transaction.categoryColor)}`}>
-                                        {transaction.category}
+                                        {transaction.categoryName}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">

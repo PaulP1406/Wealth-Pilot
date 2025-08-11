@@ -21,6 +21,7 @@ interface Transaction {
     category: string
     categoryID: string
     categoryColor: string
+    categoryName: string
     accountID: string
     accountName: string
 }
