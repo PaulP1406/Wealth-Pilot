@@ -21,8 +21,30 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
     const [transactionDate, setTransactionDate] = useState('');
 
     const supabase = createClient()
+    const handleAddTransaction = async () => {
+        if (!transactionAddingName || !transactionAddingAmount) {
+        alert('Please fill in all fields');
+        return
+        }
+        const { error } = await supabase
+            .from('transactions')
+            .insert({
+                user_id: userID,
+                name: transactionAddingName,
+                amount: Number(transactionAddingAmount),
+                description: transactionDescription,
+                type: transactionType,
+                category: transactionCategory,
+                account: transactionAccount,
+                date: transactionDate,
+            }
+            )
 
-
+        if (error) {
+        console.error('Error adding transaction:', error);
+        return
+        }
+    }
     // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
