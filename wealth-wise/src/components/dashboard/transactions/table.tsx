@@ -111,49 +111,6 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
-                                        {/* <div className={`w-8 h-8 ${getCategoryColorClasses(transaction.categoryColor).split(' ')[0]} rounded-lg flex items-center justify-center mr-3`}>
-                                            <span className={`text-sm ${getCategoryColorClasses(transaction.categoryColor).split(' ')[1]}`}>
-                                                {transaction.icon}
-                                            </span>
-                                        </div> */}
-                                        <div>
-                                            <div className="text-sm font-medium text-white">{transaction.title}</div>
-                                            {/* <div className="text-sm text-gray-400">{transaction.subtitle}</div> */}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium`}>
-                                        {transaction.categoryName}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {transaction.accountName}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <span >
-                                        {transaction.amount}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div className="flex space-x-2">
-                                        <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors">
-                                            Edit
-                                        </button>
-                                        <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                        {transactions.map((transaction, index) => (
-                            <tr key={index} className="hover:bg-[#3a3a3a] transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    {transaction.date}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center">
                                         <div className={`w-8 h-8 ${getCategoryColorClasses(transaction.categoryColor).split(' ')[0]} rounded-lg flex items-center justify-center mr-3`}>
                                             <span className={`text-sm ${getCategoryColorClasses(transaction.categoryColor).split(' ')[1]}`}>
                                                 🚗

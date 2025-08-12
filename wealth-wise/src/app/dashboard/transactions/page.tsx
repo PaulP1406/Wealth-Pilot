@@ -66,8 +66,8 @@ export default function TransactionsPage() {
 
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
-            <TransactionsHeader />
-            
+            <TransactionsHeader userID={user?.id ?? ''} />
+
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <TransactionsFilters 
                     filterType={filterType}
