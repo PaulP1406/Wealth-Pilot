@@ -22,28 +22,55 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
 
     const supabase = createClient()
     const handleAddTransaction = async () => {
-        if (!transactionAddingName || !transactionAddingAmount) {
-        alert('Please fill in all fields');
-        return
+        // Basic validation and guards
+        if (!userID) {
+            alert('You must be signed in before adding a transaction.');
+            return
         }
+        if (!transactionType || !transactionAddingName || !transactionAddingAmount || !transactionCategory || !transactionAccount || !transactionDate) {
+            alert('Please fill in all fields (Type, Title, Amount, Category, Account, Date).');
+            return
+        }
+
+        // Prepare payload using conservative, likely schema-safe column names
+        const payload: Record<string, any> = {
+            user_id: userID,
+            title: transactionAddingName,
+            subTitle: transactionDescription,
+            type: transactionType,
+            amount: Number(transactionAddingAmount),
+            categoryName: transactionCategory,
+            accountName: transactionAccount,
+            // If your DB column is timestamp/date, 'YYYY-MM-DD' is acceptable for both
+            date: transactionDate,
+        }
+
         const { error } = await supabase
             .from('transactions')
-            .insert({
-                user_id: userID,
-                name: transactionAddingName,
-                amount: Number(transactionAddingAmount),
-                description: transactionDescription,
-                type: transactionType,
-                category: transactionCategory,
-                account: transactionAccount,
-                date: transactionDate,
-            }
-            )
+            .insert(payload)
 
         if (error) {
-        console.error('Error adding transaction:', error);
-        return
+            // Surface detailed error info to help diagnose 400s (bad column names, constraints, RLS, etc.)
+            console.error('Error adding transaction:', {
+                message: error.message,
+                details: (error as any).details,
+                hint: (error as any).hint,
+                code: (error as any).code,
+                payload,
+            })
+            alert(`Failed to add transaction: ${error.message}`)
+            return
         }
+
+        // Reset form and close dropdown on success
+        setTransactionType('')
+        setTransactionAddingName('')
+        setTransactionDescription('')
+        setTransactionAddingAmount('')
+        setTransactionCategory('')
+        setTransactionAccount('')
+        setTransactionDate('')
+        setIsDropdownOpen(false)
     }
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -87,7 +114,11 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                             {/* Dropdown Form */}
                             {isDropdownOpen && (
                                 <div className="absolute right-0 top-12 w-80 bg-[#2a2a2a] border border-gray-700 rounded-xl shadow-lg z-50 p-4">
-                                    <form className="space-y-3">
+                                    <form className="space-y-3" onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleAddTransaction();
+                                        console.log("im here")
+                                    }}>
                                         <div>
                                             <label className="block text-white mb-1 text-xs font-medium">Type</label>
                                             <select 
