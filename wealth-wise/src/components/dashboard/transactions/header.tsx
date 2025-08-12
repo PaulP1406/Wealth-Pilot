@@ -68,7 +68,11 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                     <form className="space-y-3">
                                         <div>
                                             <label className="block text-white mb-1 text-xs font-medium">Type</label>
-                                            <select className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400">
+                                            <select 
+                                                className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                                                onChange={(e) => setTransactionType(e.target.value)}
+                                                value={transactionType}
+                                            >
                                                 <option value="">Select type</option>
                                                 <option value="income">Income</option>
                                                 <option value="expense">Expense</option>
@@ -113,7 +117,11 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
                                                 <label className="block text-white mb-1 text-xs font-medium">Category</label>
-                                                <select className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400">
+                                                <select 
+                                                    className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                                                    onChange={(e) => setTransactionCategory(e.target.value)}
+                                                    value={transactionCategory}
+                                                >
                                                     <option value="">Select</option>
                                                     <option value="food">Food</option>
                                                     <option value="transport">Transport</option>
@@ -124,7 +132,11 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                             </div>
                                             <div>
                                                 <label className="block text-white mb-1 text-xs font-medium">Account</label>
-                                                <select className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400">
+                                                <select 
+                                                    className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                                                    onChange={(e) => setTransactionAccount(e.target.value)}
+                                                    value={transactionAccount}
+                                                >
                                                     <option value="">Select</option>
                                                     <option value="checking">Checking</option>
                                                     <option value="savings">Savings</option>
@@ -138,6 +150,8 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                             <input
                                                 type="date"
                                                 className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                                                onChange={(e) => setTransactionDate(e.target.value)}
+                                                value={transactionDate}
                                             />
                                         </div>
 
