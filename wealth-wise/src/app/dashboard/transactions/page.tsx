@@ -64,7 +64,7 @@ export default function TransactionsPage() {
             subTitle: row.subTitle ?? row.description ?? '',
             type: row.type ?? 'expense',
             amount: Number(row.amount ?? 0),
-            amountColor: row.amountColor ?? (row.type === 'income' ? 'green' : 'red'),
+            amountColor: row.amountColor ?? (row.type === 'income' ? 'green' : 'red'), // if income the green, otherwise red, if the data is not in the payload
             date: row.date ?? '',
             category: row.category ?? row.categoryName ?? '',
             categoryID: row.categoryID ?? '',
