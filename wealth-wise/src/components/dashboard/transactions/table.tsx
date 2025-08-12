@@ -8,6 +8,7 @@ interface TransactionProps {
         user_id: string
         title: string
         subTitle: string
+        type: string
         amount: number
         amountColor: string
         date: string
@@ -31,28 +32,6 @@ export default function TransactionsTable({ transactions }: TransactionProps) {
             amount: "+$5,200.00",
             amountColor: "green",
             icon: "💼"
-        },
-        {
-            date: "Dec 14, 2024",
-            title: "Restaurant",
-            subtitle: "Dinner with friends",
-            category: "Food & Dining",
-            categoryColor: "red",
-            account: "Credit Card",
-            amount: "-$87.50",
-            amountColor: "red",
-            icon: "🍔"
-        },
-        {
-            date: "Dec 13, 2024",
-            title: "Gas Station",
-            subtitle: "Weekly fuel",
-            category: "Transportation",
-            categoryColor: "blue",
-            account: "Debit Card",
-            amount: "-$45.00",
-            amountColor: "red",
-            icon: "🚗"
         }
     ]
 

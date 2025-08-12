@@ -15,6 +15,7 @@ interface Transaction {
     user_id: string
     title: string
     subTitle: string
+    type: string
     amount: number
     amountColor: string
     date: string

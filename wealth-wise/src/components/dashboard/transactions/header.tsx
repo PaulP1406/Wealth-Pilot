@@ -15,6 +15,10 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
     const [transactionAddingName, setTransactionAddingName] = useState('');
     const [transactionAddingAmount, setTransactionAddingAmount] = useState('');
     const [transactionDescription, setTransactionDescription] = useState('');
+    const [transactionType, setTransactionType] = useState('');
+    const [transactionCategory, setTransactionCategory] = useState('');
+    const [transactionAccount, setTransactionAccount] = useState('');
+    const [transactionDate, setTransactionDate] = useState('');
 
     const supabase = createClient()
 
