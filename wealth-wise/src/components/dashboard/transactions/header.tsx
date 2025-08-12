@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { createClient } from '@/utils/supabase/client'
 
 interface TransactionsHeaderProps {
   userID: string;
@@ -9,6 +10,14 @@ interface TransactionsHeaderProps {
 export default function TransactionsHeader({ userID }: TransactionsHeaderProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    
+    // Adding transactions state
+    const [transactionAddingName, setTransactionAddingName] = useState('');
+    const [transactionAddingAmount, setTransactionAddingAmount] = useState('');
+    const [transactionDescription, setTransactionDescription] = useState('');
+
+    const supabase = createClient()
+
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -69,6 +78,8 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                                 type="text"
                                                 placeholder="e.g. Grocery Shopping"
                                                 className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                                                onChange={(e) => setTransactionAddingName(e.target.value)}
+                                                value={transactionAddingName}
                                             />
                                         </div>
 
@@ -78,6 +89,8 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                                 type="text"
                                                 placeholder="e.g. Weekly groceries"
                                                 className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                                                onChange={(e) => setTransactionDescription(e.target.value)}
+                                                value={transactionDescription}
                                             />
                                         </div>
 
@@ -88,6 +101,8 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                                 step="0.01"
                                                 placeholder="0.00"
                                                 className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                                                onChange={(e) => setTransactionAddingAmount(e.target.value)}
+                                                value={transactionAddingAmount}
                                             />
                                         </div>
 
