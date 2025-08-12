@@ -7,10 +7,19 @@ interface TransactionsHeaderProps {
   userID: string;
 }
 
+interface Account {
+  id: string;
+  name: string;
+  balance: string;
+}
+
 export default function TransactionsHeader({ userID }: TransactionsHeaderProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
-    
+
+    // Transactions account data
+    const [accounts, setAccounts] =  useState<Account[]>([])
+
     // Adding transactions state
     const [transactionAddingName, setTransactionAddingName] = useState('');
     const [transactionAddingAmount, setTransactionAddingAmount] = useState('');
@@ -21,6 +30,20 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
     const [transactionDate, setTransactionDate] = useState('');
 
     const supabase = createClient()
+
+    const fetchAccountData = async () => {
+        const { data, error } = await supabase
+            .from('accounts')
+            .select('*')
+            .eq('user_id', userID)
+
+        if (error) {
+            console.error('Error fetching account data:', error)
+            return
+        }
+        setAccounts(data || [])
+    }
+
     const handleAddTransaction = async () => {
         // Basic validation and guards
         if (!userID) {
@@ -41,7 +64,6 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
             amount: Number(transactionAddingAmount),
             categoryName: transactionCategory,
             accountName: transactionAccount,
-            // If your DB column is timestamp/date, 'YYYY-MM-DD' is acceptable for both
             date: transactionDate,
         }
 
@@ -72,6 +94,20 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
         setTransactionDate('')
         setIsDropdownOpen(false)
     }
+
+    const handleUpdateAccount = async () => {
+        const error = await supabase
+        .from('accounts')
+        .update({
+            balance: { increment: Number(transactionAddingAmount) }
+        })
+        .eq('user_id', userID)
+        .eq('name', transactionAccount)
+        if (error) {
+            console.error('Error updating account balance:', error)
+            return
+        }
+    }
     // Close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -83,6 +119,19 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
+    // Fetch accounts when userID becomes available
+    useEffect(() => {
+        if (!userID) return
+        fetchAccountData()
+    }, [userID])
+
+    // Optionally refresh accounts when opening the dropdown
+    useEffect(() => {
+        if (isDropdownOpen && userID) {
+            fetchAccountData()
+        }
+    }, [isDropdownOpen, userID])
+    
     return (
         <header className="bg-[#2a2a2a] border-b border-gray-700">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -117,7 +166,7 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                     <form className="space-y-3" onSubmit={(e) => {
                                         e.preventDefault();
                                         handleAddTransaction();
-                                        console.log("im here")
+                                        handleUpdateAccount();
                                     }}>
                                         <div>
                                             <label className="block text-white mb-1 text-xs font-medium">Type</label>
@@ -185,15 +234,17 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                             </div>
                                             <div>
                                                 <label className="block text-white mb-1 text-xs font-medium">Account</label>
-                                                <select 
+                                                <select
                                                     className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
                                                     onChange={(e) => setTransactionAccount(e.target.value)}
                                                     value={transactionAccount}
                                                 >
                                                     <option value="">Select</option>
-                                                    <option value="checking">Checking</option>
-                                                    <option value="savings">Savings</option>
-                                                    <option value="credit">Credit</option>
+                                                    {accounts.map((acct) => (
+                                                        <option key={acct.id} value={acct.name}>
+                                                            {acct.name}
+                                                        </option>
+                                                    ))}
                                                 </select>
                                             </div>
                                         </div>
