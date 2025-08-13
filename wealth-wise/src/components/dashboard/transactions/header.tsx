@@ -27,6 +27,7 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
     const [transactionType, setTransactionType] = useState('');
     const [transactionCategory, setTransactionCategory] = useState('');
     const [transactionAccount, setTransactionAccount] = useState('');
+    const [transactionAccountID, setTransactionAccountID] = useState('');
     const [transactionDate, setTransactionDate] = useState('');
 
     const supabase = createClient()
@@ -91,22 +92,55 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
         setTransactionAddingAmount('')
         setTransactionCategory('')
         setTransactionAccount('')
+        setTransactionAccountID('')
         setTransactionDate('')
         setIsDropdownOpen(false)
     }
 
     const handleUpdateAccount = async () => {
-        const error = await supabase
-        .from('accounts')
-        .update({
-            balance: { increment: Number(transactionAddingAmount) }
-        })
-        .eq('user_id', userID)
-        .eq('name', transactionAccount)
-        if (error) {
-            console.error('Error updating account balance:', error)
+        const { data: accountData, error: fetchError } = await supabase
+            .from('accounts')
+            .select('balance')
+            .eq('user_id', userID)
+            .eq('id', transactionAccountID)
+            .single()
+        
+        if (fetchError) {
+            console.error('Error fetching current account balance:', fetchError)
             return
         }
+
+        // Calculate new balance based on transaction type
+        const currentBalance = Number(accountData.balance)
+        const transactionAmount = Number(transactionAddingAmount)
+        let newBalance = currentBalance
+
+        if (transactionType === 'income') {
+            newBalance = currentBalance + transactionAmount
+        } else if (transactionType === 'expense') {
+            newBalance = currentBalance - transactionAmount
+        // implement transfer after
+
+        // Update the account with the new balance
+        const { data, error } = await supabase
+            .from('accounts')
+            .update({
+                balance: newBalance
+            })
+            .eq('user_id', userID)
+            .eq('id', transactionAccountID)
+        
+        if (error) {
+            console.error('Error updating account balance:', error)
+            console.log('userID:', userID)
+            console.log('transactionAccountID:', transactionAccountID)
+            console.log('currentBalance:', currentBalance)
+            console.log('transactionAmount:', transactionAmount)
+            console.log('newBalance:', newBalance)
+            return
+        }
+        
+        console.log('Account balance updated successfully:', currentBalance, '→', newBalance)
     }
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -236,12 +270,21 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                                 <label className="block text-white mb-1 text-xs font-medium">Account</label>
                                                 <select
                                                     className="w-full px-2 py-1.5 bg-[#3a3a3a] border border-gray-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-yellow-400"
-                                                    onChange={(e) => setTransactionAccount(e.target.value)}
-                                                    value={transactionAccount}
+                                                    onChange={(e) => {
+                                                        const selectedAccount = accounts.find(acct => acct.id === e.target.value);
+                                                        if (selectedAccount) {
+                                                            setTransactionAccount(selectedAccount.name);
+                                                            setTransactionAccountID(selectedAccount.id);
+                                                        } else {
+                                                            setTransactionAccount('');
+                                                            setTransactionAccountID('');
+                                                        }
+                                                    }}
+                                                    value={transactionAccountID}
                                                 >
                                                     <option value="">Select</option>
                                                     {accounts.map((acct) => (
-                                                        <option key={acct.id} value={acct.name}>
+                                                        <option key={acct.id} value={acct.id}>
                                                             {acct.name}
                                                         </option>
                                                     ))}
