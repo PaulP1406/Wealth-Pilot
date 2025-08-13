@@ -109,7 +109,7 @@ export default function TransactionsPage() {
                 
                 <TransactionsSummary />
 
-                <TransactionsTable transactions={transactionsData} />
+                <TransactionsTable transactions={transactionsData} userID={user?.id ?? ''} />
             </main>
         </div>
     )
