@@ -109,7 +109,6 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
             console.error('Error fetching current account balance:', fetchError)
             return
         }
-
         // Calculate new balance based on transaction type
         const currentBalance = Number(accountData.balance)
         const transactionAmount = Number(transactionAddingAmount)

@@ -169,6 +169,36 @@ export default function TransactionsTable({ transactions, userID }: TransactionP
         if (editingTransaction && accounts.length === 0 && userID) fetchAccountData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [editingTransaction])
+
+    const handleUpdateAccount = async () => {
+        if (!editingTransaction || !userID) return
+
+        const { id, accountName } = editingTransaction
+        const currentAccount = accounts.find(acc => acc.name === accountName)
+
+        if (!currentAccount) {
+            alert('Selected account not found.')
+            return
+        }
+
+        const currentBalance = Number(currentAccount.balance)
+        const newBalance = currentBalance + editingTransaction.amount
+
+        const { error } = await supabase
+            .from('accounts')
+            .update({ balance: newBalance })
+            .eq('id', currentAccount.id)
+            .eq('user_id', userID)
+
+        if (error) {
+            console.error('Error updating account balance:', error)
+            alert('Failed to update account balance: ' + error.message)
+            return
+        }
+
+        // Update local accounts state
+        setAccounts(prev => prev.map(acc => acc.id === currentAccount.id ? { ...acc, balance: String(newBalance) } : acc))
+    }
     return (
         <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-700">
@@ -308,7 +338,10 @@ export default function TransactionsTable({ transactions, userID }: TransactionP
                                                 <>
                                                     <button
                                                         className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition-colors"
-                                                        onClick={handleSaveTransaction}
+                                                        onClick={() => {
+                                                            handleSaveTransaction()
+                                                            handleUpdateAccount()
+                                                        }}
                                                     >
                                                         Save
                                                     </button>
