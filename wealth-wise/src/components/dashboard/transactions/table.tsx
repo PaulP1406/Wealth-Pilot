@@ -18,7 +18,8 @@ interface TransactionProps {
         accountID: string
         accountName: string
     }[],
-    userID: string
+    userID: string,
+    onDeleteTransaction: (id: string) => void;
 }
 
 
@@ -28,7 +29,7 @@ interface Account {
   balance: string;
 }
 
-export default function TransactionsTable({ transactions, userID }: TransactionProps) {
+export default function TransactionsTable({ transactions, userID, onDeleteTransaction }: TransactionProps) {
     const [accounts, setAccounts] = useState<Account[]>([])
     // Local copy so we can optimistically update edited rows without forcing parent to refetch
     const [localTransactions, setLocalTransactions] = useState(transactions)

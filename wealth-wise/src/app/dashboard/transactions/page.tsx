@@ -109,6 +109,58 @@ export default function TransactionsPage() {
         const transactionType = transactionData?.type;
         const transactionAmount = transactionData?.amount;
 
+        // Update the accounts
+        if (transactionType === 'expense') {
+            // Update the account balance
+            if (transactionType && transactionAmount) {
+            // Fetch current account balance
+            const { data: accountData, error: accountError } = await supabase
+                .from('accounts')
+                .select('balance')
+                .eq('id', user.id)
+                .single();
+            if (accountError) {
+                console.error('Error fetching account balance:', accountError);
+            } else {
+                const newBalance = (accountData?.balance ?? 0) + transactionAmount;
+                const { error: updateError } = await supabase
+                    .from('accounts')
+                    .update({
+                        balance: newBalance
+                    })
+                    .eq('id', user.id);
+                if (updateError) {
+                    console.error('Error updating account balance:', updateError);
+                }
+            }
+        }
+        else if (transactionType === 'income') {
+            // Update the account balance
+            if (transactionType && transactionAmount) {
+                // Fetch current account balance
+                const { data: accountData, error: accountError } = await supabase
+                    .from('accounts')
+                    .select('balance')
+                    .eq('id', user.id)
+                    .single();
+                if (accountError) {
+                    console.error('Error fetching account balance:', accountError);
+                } else {
+                    const newBalance = (accountData?.balance ?? 0) - transactionAmount;
+                    const { error: updateError } = await supabase
+                        .from('accounts')
+                        .update({
+                            balance: newBalance
+                        })
+                        .eq('id', user.id);
+                    if (updateError) {
+                        console.error('Error updating account balance:', updateError);
+                    }
+                }
+            }
+        }
+
+        // deleting transaction
         const { error } = await supabase
             .from('transactions')
             .delete()
@@ -122,6 +174,7 @@ export default function TransactionsPage() {
         fetchTransactionsData(user.id);
         setLoading(false);
     }
+}
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
             <TransactionsHeader userID={user?.id ?? ''} />
@@ -140,7 +193,7 @@ export default function TransactionsPage() {
                 
                 <TransactionsSummary />
 
-                <TransactionsTable transactions={transactionsData} userID={user?.id ?? ''} />
+                <TransactionsTable transactions={transactionsData} userID={user?.id ?? ''} onDeleteTransaction={deleteTransaction} />
             </main>
         </div>
     )
