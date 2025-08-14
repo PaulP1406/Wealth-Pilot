@@ -91,6 +91,37 @@ export default function TransactionsPage() {
             fetchData()        
     }, [supabase])
 
+    // Delete transaction function
+    const deleteTransaction = async (transactionId: string) => {
+        if (!user?.id) return;
+        setLoading(true);
+        // Fetch type and amount for the transaction
+        const { data: transactionData, error: fetchError } = await supabase
+            .from('transactions')
+            .select('type, amount')
+            .eq('id', transactionId)
+            .single();
+        if (fetchError) {
+            console.error('Error fetching transaction details:', fetchError);
+            setLoading(false);
+            return;
+        }
+        const transactionType = transactionData?.type;
+        const transactionAmount = transactionData?.amount;
+
+        const { error } = await supabase
+            .from('transactions')
+            .delete()
+            .eq('id', transactionId)
+            .eq('user_id', user.id);
+        if (error) {
+            console.error('Error deleting transaction:', error);
+        } else {
+            setTransactionsData(transactionsData.filter(transaction => transaction.id !== transactionId));
+        }
+        fetchTransactionsData(user.id);
+        setLoading(false);
+    }
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
             <TransactionsHeader userID={user?.id ?? ''} />
