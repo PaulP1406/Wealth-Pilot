@@ -120,7 +120,7 @@ export default function TransactionsPage() {
                 .eq('id', user.id)
                 .single();
             if (accountError) {
-                console.error('Error fetching account balance:', accountError);
+                console.error('Error fetching account balance for expense:', accountError);
             } else {
                 const newBalance = (accountData?.balance ?? 0) + transactionAmount;
                 const { error: updateError } = await supabase
@@ -130,7 +130,7 @@ export default function TransactionsPage() {
                     })
                     .eq('id', user.id);
                 if (updateError) {
-                    console.error('Error updating account balance:', updateError);
+                    console.error('Error updating account balance for expense:', updateError);
                 }
             }
         }
@@ -144,7 +144,7 @@ export default function TransactionsPage() {
                     .eq('id', user.id)
                     .single();
                 if (accountError) {
-                    console.error('Error fetching account balance:', accountError);
+                    console.error('Error fetching account balance for income:', accountError);
                 } else {
                     const newBalance = (accountData?.balance ?? 0) - transactionAmount;
                     const { error: updateError } = await supabase
@@ -154,7 +154,7 @@ export default function TransactionsPage() {
                         })
                         .eq('id', user.id);
                     if (updateError) {
-                        console.error('Error updating account balance:', updateError);
+                        console.error('Error updating account balance for income:', updateError);
                     }
                 }
             }
