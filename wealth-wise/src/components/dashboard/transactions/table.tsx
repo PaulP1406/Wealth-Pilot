@@ -443,7 +443,10 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
                                                     >
                                                         Edit
                                                     </button>
-                                                    <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                                                    <button 
+                                                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors"
+                                                        onClick={() => onDeleteTransaction(transaction.id)}
+                                                    >
                                                         Delete
                                                     </button>
                                                 </>
