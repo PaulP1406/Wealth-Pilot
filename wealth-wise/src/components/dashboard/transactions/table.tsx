@@ -45,6 +45,10 @@ export default function TransactionsTable({ transactions, userID }: TransactionP
         categoryColor: string;
         type: string;
     }>(null)
+    const [previousAmount, setPreviousAmount] = useState<number | null>(null)
+    const [previousType, setPreviousType] = useState<string | null>(null)
+    const [adjustedDifference, setAdjustedDifference] = useState<number | null>(null)
+
     const supabase = createClient()
     const sampleTransactions = [
         {
@@ -143,15 +147,22 @@ export default function TransactionsTable({ transactions, userID }: TransactionP
         }
 
         // Optimistic local update
-        setLocalTransactions(prev => prev.map((t, i) => i === editingTransaction.index ? {
-            ...t,
-            title,
-            subTitle,
-            amount,
-            categoryName,
-            accountName,
-            date,
-        } : t))
+        setLocalTransactions(prev => {
+            // Get the previous amount before updating
+            const prevAmount = prev[editingTransaction.index]?.amount
+            setPreviousAmount(prevAmount)
+            console.log('Setting previous amount to:', prevAmount)
+            
+            return prev.map((t, i) => i === editingTransaction.index ? {
+                ...t,
+                title,
+                subTitle,
+                amount,
+                categoryName,
+                accountName,
+                date,
+            } : t)
+        })
         setEditingTransaction(null)
     }
 
@@ -180,9 +191,67 @@ export default function TransactionsTable({ transactions, userID }: TransactionP
             alert('Selected account not found.')
             return
         }
-
+        
         const currentBalance = Number(currentAccount.balance)
-        const newBalance = currentBalance + editingTransaction.amount
+        console.log('Current account balance:', currentBalance)
+        const difference = editingTransaction.amount - (previousAmount ?? 0)
+        const newBalance = currentBalance + difference
+        console.log('previous amount:', previousAmount)
+        console.log('New account balance:', difference)
+
+        const { error } = await supabase
+            .from('accounts')
+            .update({ balance: newBalance })
+            .eq('id', currentAccount.id)
+            .eq('user_id', userID)
+
+        if (error) {
+            console.error('Error updating account balance:', error)
+            alert('Failed to update account balance: ' + error.message)
+            return
+        }
+
+        // Update local accounts state
+        setAccounts(prev => prev.map(acc => acc.id === currentAccount.id ? { ...acc, balance: String(newBalance) } : acc))
+    }
+
+    const handleUpdateAccountWithPrevAmount = async (prevAmount: number, prevType: string | null) => {
+        if (!editingTransaction || !userID) return
+
+        const { accountName } = editingTransaction
+        const currentAccount = accounts.find(acc => acc.name === accountName)
+
+        if (!currentAccount) {
+            alert('Selected account not found.')
+            return
+        }
+        
+        const currentBalance = Number(currentAccount.balance)
+        console.log('Current account balance:', currentBalance)
+        console.log('Previous amount:', prevAmount)
+        console.log('Previous type:', prevType)
+        console.log('New amount:', editingTransaction.amount)
+        
+        let adjustedDiff: number;
+        
+        if (prevType === 'expense') {
+            const difference = prevAmount - editingTransaction.amount
+            adjustedDiff = difference  // For expense: less expense = more money back
+        }
+        else if (prevType === 'income') {
+            const difference = editingTransaction.amount - prevAmount
+            adjustedDiff = difference  // For income: more income = more money
+        }
+        else {
+            // Handle case where prevType is null or unknown
+            console.warn('Previous type is null or unknown, defaulting to simple difference')
+            adjustedDiff = editingTransaction.amount - prevAmount
+        }
+  
+        const newBalance = currentBalance + adjustedDiff
+        console.log('Difference:', adjustedDiff)
+        console.log('New account balance:', newBalance)
+        console.log('Previous transaction type:', previousType)
 
         const { error } = await supabase
             .from('accounts')
@@ -338,9 +407,22 @@ export default function TransactionsTable({ transactions, userID }: TransactionP
                                                 <>
                                                     <button
                                                         className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition-colors"
-                                                        onClick={() => {
-                                                            handleSaveTransaction()
-                                                            handleUpdateAccount()
+                                                        onClick={async () => {
+                                                            // Get the previous amount BEFORE any updates
+                                                            const prevAmount = localTransactions[editingTransaction?.index ?? -1]?.amount ?? 0
+                                                            const prevType = localTransactions[editingTransaction?.index ?? -1]?.type ?? null
+                                                            
+                                                            // Debug logging
+                                                            console.log('Full transaction object:', localTransactions[editingTransaction?.index ?? -1])
+                                                            console.log('Previous amount captured:', prevAmount)
+                                                            console.log('Previous type captured:', prevType)
+                                                            console.log('All available keys:', Object.keys(localTransactions[editingTransaction?.index ?? -1] || {}))
+
+                                                            // Save the transaction first
+                                                            await handleSaveTransaction()
+                                                            
+                                                            // Then update the account with the previous amount and type
+                                                            await handleUpdateAccountWithPrevAmount(prevAmount, prevType)
                                                         }}
                                                     >
                                                         Save

@@ -109,6 +109,7 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
             console.error('Error fetching current account balance:', fetchError)
             return
         }
+
         // Calculate new balance based on transaction type
         const currentBalance = Number(accountData.balance)
         const transactionAmount = Number(transactionAddingAmount)
@@ -118,29 +119,31 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
             newBalance = currentBalance + transactionAmount
         } else if (transactionType === 'expense') {
             newBalance = currentBalance - transactionAmount
-            // implement transfer after
+        } else if (transactionType === 'transfer') {
+            // fix transfer logic after
+            newBalance = currentBalance - transactionAmount
+        }
 
-            // Update the account with the new balance
-            const { data, error } = await supabase
-                .from('accounts')
-                .update({
-                    balance: newBalance
-                })
-                .eq('user_id', userID)
-                .eq('id', transactionAccountID)
-            
-            if (error) {
-                console.error('Error updating account balance:', error)
-                console.log('userID:', userID)
-                console.log('transactionAccountID:', transactionAccountID)
-                console.log('currentBalance:', currentBalance)
-                console.log('transactionAmount:', transactionAmount)
-                console.log('newBalance:', newBalance)
-                return
+        // Update the account with the new balance
+        const { data, error } = await supabase
+            .from('accounts')
+            .update({
+                balance: newBalance
+            })
+            .eq('user_id', userID)
+            .eq('id', transactionAccountID)
+        
+        if (error) {
+            console.error('Error updating account balance:', error)
+            console.log('userID:', userID)
+            console.log('transactionAccountID:', transactionAccountID)
+            console.log('currentBalance:', currentBalance)
+            console.log('transactionAmount:', transactionAmount)
+            console.log('newBalance:', newBalance)
+            return
         }
         
         console.log('Account balance updated successfully:', currentBalance, '→', newBalance)
-        }
     }
     // Close dropdown when clicking outside
     useEffect(() => {
