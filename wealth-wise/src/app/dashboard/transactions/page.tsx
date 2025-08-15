@@ -92,70 +92,71 @@ export default function TransactionsPage() {
     }, [supabase])
 
     // Delete transaction function
-    const deleteTransaction = async (transactionId: string) => {
-        if (!user?.id) return;
+    const deleteTransaction = async (transactionId: string) => {        
+        if (!user?.id) return;        
         setLoading(true);
-        // Fetch type and amount for the transaction
+        
+        // Fetch transaction details including which account it belongs to
         const { data: transactionData, error: fetchError } = await supabase
             .from('transactions')
-            .select('type, amount')
+            .select('type, amount, account_id, accountName')
             .eq('id', transactionId)
             .single();
+            
         if (fetchError) {
             console.error('Error fetching transaction details:', fetchError);
             setLoading(false);
             return;
         }
-        const transactionType = transactionData?.type;
-        const transactionAmount = transactionData?.amount;
 
-        // Update the accounts
-        if (transactionType === 'expense') {
-            // Update the account balance
-            if (transactionType && transactionAmount) {
-            // Fetch current account balance
-            const { data: accountData, error: accountError } = await supabase
+        const { type: transactionType, amount: transactionAmount, account_id: accountID, accountName } = transactionData;
+        console.log("Transaction Type:", transactionType);
+        console.log("Transaction Amount:", transactionAmount);
+        console.log("Account ID:", accountID);
+        console.log("Account Name:", accountName);
+
+        // Update the specific account balance
+        if (transactionType && transactionAmount && (accountID || accountName)) {
+            let accountQuery = supabase
                 .from('accounts')
-                .select('balance')
-                .eq('id', user.id)
-                .single();
+                .select('id, balance')
+                .eq('user_id', user.id);
+            
+            // Use accountID if available, otherwise fall back to accountName
+            if (accountID) {
+                accountQuery = accountQuery.eq('id', accountID);
+            } else if (accountName) {
+                accountQuery = accountQuery.eq('name', accountName);
+            }
+            
+            const { data: accountData, error: accountError } = await accountQuery.single();
+            
             if (accountError) {
-                console.error('Error fetching account balance for expense:', accountError);
-            } else {
-                const newBalance = (accountData?.balance ?? 0) + transactionAmount;
+                console.error('Error fetching account balance:', accountError);
+            } else if (accountData) {
+                let newBalance: number;
+                
+                if (transactionType === 'expense') {
+                    // Deleting an expense gives money back to the account
+                    newBalance = (accountData.balance ?? 0) + transactionAmount;
+                } else if (transactionType === 'income') {
+                    // Deleting income removes money from the account
+                    newBalance = (accountData.balance ?? 0) - transactionAmount;
+                } else {
+                    // Handle other transaction types if needed
+                    newBalance = accountData.balance ?? 0;
+                }
+                
                 const { error: updateError } = await supabase
                     .from('accounts')
-                    .update({
-                        balance: newBalance
-                    })
-                    .eq('id', user.id);
+                    .update({ balance: newBalance })
+                    .eq('id', accountData.id)
+                    .eq('user_id', user.id);
+                    
                 if (updateError) {
-                    console.error('Error updating account balance for expense:', updateError);
-                }
-            }
-        }
-        else if (transactionType === 'income') {
-            // Update the account balance
-            if (transactionType && transactionAmount) {
-                // Fetch current account balance
-                const { data: accountData, error: accountError } = await supabase
-                    .from('accounts')
-                    .select('balance')
-                    .eq('id', user.id)
-                    .single();
-                if (accountError) {
-                    console.error('Error fetching account balance for income:', accountError);
+                    console.error('Error updating account balance:', updateError);
                 } else {
-                    const newBalance = (accountData?.balance ?? 0) - transactionAmount;
-                    const { error: updateError } = await supabase
-                        .from('accounts')
-                        .update({
-                            balance: newBalance
-                        })
-                        .eq('id', user.id);
-                    if (updateError) {
-                        console.error('Error updating account balance for income:', updateError);
-                    }
+                    console.log(`Account balance updated: ${accountData.balance} → ${newBalance}`);
                 }
             }
         }
@@ -174,7 +175,7 @@ export default function TransactionsPage() {
         fetchTransactionsData(user.id);
         setLoading(false);
     }
-}
+
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
             <TransactionsHeader userID={user?.id ?? ''} />
