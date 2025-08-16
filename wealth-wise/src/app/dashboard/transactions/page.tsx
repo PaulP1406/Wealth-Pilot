@@ -77,7 +77,13 @@ export default function TransactionsPage() {
         setTransactionsData(mapped)
         setLoading(false)
     }
-     useEffect(() => {
+
+    const handleFetchTransactions = () => {
+        if (!user?.id) return
+        fetchTransactionsData(user.id)
+    }
+
+    useEffect(() => {
             // configure auth first
             const fetchData = async () => {
                 const { data: userData, error } = await supabase.auth.getUser()
@@ -169,16 +175,21 @@ export default function TransactionsPage() {
             .eq('user_id', user.id);
         if (error) {
             console.error('Error deleting transaction:', error);
+            alert('Failed to delete transaction: ' + error.message);
         } else {
-            setTransactionsData(transactionsData.filter(transaction => transaction.id !== transactionId));
+            console.log('Transaction deleted successfully');
+            // Optimistically remove from local state
+            setTransactionsData(prev => prev.filter(transaction => transaction.id !== transactionId));
         }
-        fetchTransactionsData(user.id);
+        
+        // Always refetch to ensure data consistency
+        await fetchTransactionsData(user.id);
         setLoading(false);
     }
 
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
-            <TransactionsHeader userID={user?.id ?? ''} />
+            <TransactionsHeader userID={user?.id ?? ''} onFetchTransactions={handleFetchTransactions} />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <TransactionsFilters 
@@ -194,7 +205,12 @@ export default function TransactionsPage() {
                 
                 <TransactionsSummary />
 
-                <TransactionsTable transactions={transactionsData} userID={user?.id ?? ''} onDeleteTransaction={deleteTransaction} />
+                <TransactionsTable 
+                    transactions={transactionsData} 
+                    userID={user?.id ?? ''} 
+                    onDeleteTransaction={deleteTransaction}
+                    onTransactionUpdated={handleFetchTransactions}
+                />
             </main>
         </div>
     )

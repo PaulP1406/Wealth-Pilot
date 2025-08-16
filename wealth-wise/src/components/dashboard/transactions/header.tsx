@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 
 interface TransactionsHeaderProps {
   userID: string;
+onFetchTransactions?: () => void; // Optional callback to fetch transactions
 }
 
 interface Account {
@@ -13,7 +14,7 @@ interface Account {
   balance: string;
 }
 
-export default function TransactionsHeader({ userID }: TransactionsHeaderProps) {
+export default function TransactionsHeader({ userID, onFetchTransactions }: TransactionsHeaderProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -95,6 +96,11 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
         setTransactionAccountID('')
         setTransactionDate('')
         setIsDropdownOpen(false)
+
+        // Trigger parent to refetch transactions
+        if (onFetchTransactions) {
+            onFetchTransactions()
+        }
     }
 
     const handleUpdateAccount = async () => {
@@ -204,6 +210,7 @@ export default function TransactionsHeader({ userID }: TransactionsHeaderProps) 
                                         e.preventDefault();
                                         handleAddTransaction();
                                         handleUpdateAccount();
+                                        onFetchTransactions?.();
                                     }}>
                                         <div>
                                             <label className="block text-white mb-1 text-xs font-medium">Type</label>

@@ -20,6 +20,7 @@ interface TransactionProps {
     }[],
     userID: string,
     onDeleteTransaction: (id: string) => void;
+    onTransactionUpdated?: () => void; // Optional callback after transaction update
 }
 
 
@@ -29,7 +30,7 @@ interface Account {
   balance: string;
 }
 
-export default function TransactionsTable({ transactions, userID, onDeleteTransaction }: TransactionProps) {
+export default function TransactionsTable({ transactions, userID, onDeleteTransaction, onTransactionUpdated }: TransactionProps) {
     const [accounts, setAccounts] = useState<Account[]>([])
     // Local copy so we can optimistically update edited rows without forcing parent to refetch
     const [localTransactions, setLocalTransactions] = useState(transactions)
@@ -169,8 +170,14 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
 
     // Sync local copy when parent prop changes (e.g., refetch in parent)
     useEffect(() => {
+        console.log('Transactions prop changed, updating local state:', transactions)
         setLocalTransactions(transactions)
-    }, [transactions])
+        
+        // Reset editing state when transactions update from parent
+        if (editingTransaction) {
+            setEditingTransaction(null)
+        }
+    }, [transactions, editingTransaction])
 
     useEffect(() => {
         if (userID) fetchAccountData()
@@ -424,6 +431,11 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
                                                             
                                                             // Then update the account with the previous amount and type
                                                             await handleUpdateAccountWithPrevAmount(prevAmount, prevType)
+                                                            
+                                                            // Trigger parent to refetch transactions for data consistency
+                                                            if (onTransactionUpdated) {
+                                                                onTransactionUpdated()
+                                                            }
                                                         }}
                                                     >
                                                         Save
