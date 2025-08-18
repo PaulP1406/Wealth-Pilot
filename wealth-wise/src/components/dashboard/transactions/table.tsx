@@ -47,6 +47,7 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
         amountColor: string;
         categoryColor: string;
         type: string;
+        icon: string;
     }>(null)
     const [previousAmount, setPreviousAmount] = useState<number | null>(null)
     const [previousType, setPreviousType] = useState<string | null>(null)
@@ -85,6 +86,20 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
         setAccounts(data || [])
     }
     const handleEditTransaction = (t: typeof localTransactions[number], index: number) => {
+        if (t.categoryName === 'food') {
+            t.icon = '🍔'
+        } 
+        else if (t.categoryName.toLowerCase() === 'transportation') {
+            t.icon = '🚗'
+        } else if (t.categoryName.toLowerCase()  === 'entertainment') {
+            t.icon = '🎉'
+        } else if (t.categoryName.toLowerCase()  === 'bills') {
+            t.icon = '💡'
+        } else if (t.categoryName.toLowerCase()  === 'salary') {
+            t.icon = '🏦'
+        } else if (t.categoryName.toLowerCase()  === 'shopping') {
+            t.icon = '🛍️'
+        }
         setEditingTransaction({
             id: t.id,
             index,
@@ -97,6 +112,7 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
             amountColor: t.amountColor,
             categoryColor: t.categoryColor,
             type: t.type,
+            icon: t.icon,
         })
     }
 
