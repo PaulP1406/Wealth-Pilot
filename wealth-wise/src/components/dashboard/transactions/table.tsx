@@ -174,14 +174,17 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
 
     // Sync local copy when parent prop changes (e.g., refetch in parent)
     useEffect(() => {
-        console.log('Transactions prop changed, updating local state:', transactions)
+        // Only proceed if reference actually changed
         setLocalTransactions(transactions)
-        
-        // Reset editing state when transactions update from parent
+
+        // If currently editing, keep the edit session alive unless that row vanished
         if (editingTransaction) {
-            setEditingTransaction(null)
+            const stillExists = transactions.some(t => t.id === editingTransaction.id)
+            if (!stillExists) {
+                setEditingTransaction(null)
+            }
         }
-    }, [transactions, editingTransaction])
+    }, [transactions])
 
     useEffect(() => {
         if (userID) fetchAccountData()
