@@ -53,19 +53,6 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
     const [adjustedDifference, setAdjustedDifference] = useState<number | null>(null)
 
     const supabase = createClient()
-    const sampleTransactions = [
-        {
-            date: "Dec 15, 2024",
-            title: "Salary Payment",
-            subtitle: "Monthly salary",
-            category: "Income",
-            categoryColor: "green",
-            account: "Main Checking",
-            amount: "+$5,200.00",
-            amountColor: "green",
-            icon: "💼"
-        }
-    ]
 
     const getCategoryColorClasses = (color: string) => {
         const colors = {
