@@ -1,10 +1,18 @@
 import Link from "next/link";
 interface Transaction {
-  name: string;
-  type: string;
-  amount: string;
-  icon: string;
-  isPositive?: boolean;
+  id: string
+  user_id: string
+  title: string
+  subTitle: string
+  type: string
+  amount: number
+  amountColor: string
+  date: string
+  categoryName: string
+  categoryID: string
+  categoryColor: string
+  accountID: string
+  accountName: string
 }
 
 interface RecentTransactionsProps {
@@ -22,15 +30,15 @@ export function RecentTransactionsCard({ transactions }: RecentTransactionsProps
             <div key={index} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-[#3a3a3a] rounded-full flex items-center justify-center">
-                  <span className="text-sm">{transaction.icon}</span>
+                  <span className="text-sm">🚗</span>
                 </div>
                 <div>
-                  <div className="text-white font-medium text-sm">{transaction.name}</div>
+                  <div className="text-white font-medium text-sm">{transaction.title}</div>
                   <div className="text-gray-400 text-xs">{transaction.type}</div>
                 </div>
               </div>
               <div className={`font-semibold text-sm ${
-                transaction.isPositive ? 'text-green-400' : 'text-red-400'
+                transaction.type === 'income' ? 'text-green-400' : 'text-red-400'
               }`}>
                 {transaction.amount}
               </div>
