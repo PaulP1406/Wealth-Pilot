@@ -9,6 +9,7 @@ import TransactionsTable from '@/components/dashboard/transactions/table'
 import { redirect } from 'next/navigation'
 import { useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
+import { i } from 'framer-motion/client'
 
 interface Transaction {
     id: string
@@ -25,6 +26,7 @@ interface Transaction {
     categoryName: string
     accountID: string
     accountName: string
+    icon: string
 }
 export default function TransactionsPage() {
     const [user, setUser] = useState<User | undefined>()
@@ -72,6 +74,7 @@ export default function TransactionsPage() {
             categoryName: row.categoryName ?? row.category ?? '',
             accountID: row.accountID ?? '',
             accountName: row.accountName ?? row.account ?? '',
+            icon: row.icon ?? '💰',
         })) as unknown as Transaction[]
 
         setTransactionsData(mapped)

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, use } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 
@@ -30,6 +30,7 @@ export default function TransactionsHeader({ userID, onFetchTransactions }: Tran
     const [transactionAccount, setTransactionAccount] = useState('');
     const [transactionAccountID, setTransactionAccountID] = useState('');
     const [transactionDate, setTransactionDate] = useState('');
+    const [icon, setIcon] = useState('');
 
     const supabase = createClient()
 
@@ -57,6 +58,20 @@ export default function TransactionsHeader({ userID, onFetchTransactions }: Tran
             return
         }
 
+        if (transactionCategory === 'food') {
+            setIcon('🍔')
+        } else if (transactionCategory.toLowerCase() === 'transport') {
+            setIcon('🚗')
+        } else if (transactionCategory.toLowerCase()  === 'entertainment') {
+            setIcon('🎉')
+        } else if (transactionCategory.toLowerCase()  === 'bills') {
+            setIcon('💡')
+        } else if (transactionCategory.toLowerCase()  === 'salary') {
+            setIcon('🏦')
+        } else if (transactionCategory.toLowerCase()  === 'shopping') {
+            setIcon('🛍️')
+        }
+        console.log('Selected icon:', icon)
         // Prepare payload using conservative, likely schema-safe column names
         const payload: Record<string, any> = {
             user_id: userID,
@@ -67,6 +82,7 @@ export default function TransactionsHeader({ userID, onFetchTransactions }: Tran
             categoryName: transactionCategory,
             accountName: transactionAccount,
             date: transactionDate,
+            icon: icon,
         }
 
         const { error } = await supabase

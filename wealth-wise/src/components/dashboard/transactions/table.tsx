@@ -17,6 +17,7 @@ interface TransactionProps {
         categoryColor: string
         accountID: string
         accountName: string
+        icon: string
     }[],
     userID: string,
     onDeleteTransaction: (id: string) => void;
@@ -329,7 +330,7 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
                                         <div className="flex items-center">
                                             <div className={`w-8 h-8 ${getCategoryColorClasses(transaction.categoryColor).split(' ')[0]} rounded-lg flex items-center justify-center mr-3`}>
                                                 <span className={`text-sm ${getCategoryColorClasses(transaction.categoryColor).split(' ')[1]}`}>
-                                                    🚗
+                                                    {transaction.icon || '💰'}
                                                 </span>
                                             </div>
                                             <div className="space-y-1">
