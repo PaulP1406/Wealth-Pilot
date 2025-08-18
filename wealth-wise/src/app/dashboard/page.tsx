@@ -24,6 +24,7 @@ interface Transaction {
     categoryName: string
     accountID: string
     accountName: string
+    icon: string
 }
 
 export default async function DashBoard(

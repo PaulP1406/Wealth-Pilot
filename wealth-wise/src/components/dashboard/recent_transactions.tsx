@@ -13,6 +13,7 @@ interface Transaction {
   categoryColor: string
   accountID: string
   accountName: string
+  icon: string
 }
 
 interface RecentTransactionsProps {
@@ -30,7 +31,7 @@ export function RecentTransactionsCard({ transactions }: RecentTransactionsProps
             <div key={index} className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-[#3a3a3a] rounded-full flex items-center justify-center">
-                  <span className="text-sm">🚗</span>
+                  <span className="text-sm">{transaction.icon}</span>
                 </div>
                 <div>
                   <div className="text-white font-medium text-sm">{transaction.title}</div>
