@@ -411,7 +411,7 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
                                             />
                                         ) : (
                                             <span className={getAmountColorClasses(transaction.amountColor)}>
-                                                {transaction.amount}
+                                                ${transaction.amount}
                                             </span>
                                         )}
                                     </td>

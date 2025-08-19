@@ -82,7 +82,9 @@ export default async function DashBoard(
     .from('transactions')
     .select('*')
     .eq('user_id', user.id)
+    .order('date', { ascending: false })
     .limit(5)
+
   if (transactionsError) {
     console.error('Error fetching transactions data:', transactionsError)
     return <div>Error loading transactions data</div>

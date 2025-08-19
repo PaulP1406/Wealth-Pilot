@@ -41,7 +41,7 @@ export function RecentTransactionsCard({ transactions }: RecentTransactionsProps
               <div className={`font-semibold text-sm ${
                 transaction.type === 'income' ? 'text-green-400' : 'text-red-400'
               }`}>
-                {transaction.amount}
+                ${transaction.amount}
               </div>
             </div>
           ))}
