@@ -5,6 +5,7 @@ import TransactionsHeader from '@/components/dashboard/transactions/header'
 import TransactionsFilters from '@/components/dashboard/transactions/filters'
 import TransactionsSummary from '@/components/dashboard/transactions/summary'
 import TransactionsTable from '@/components/dashboard/transactions/table'
+import { differenceInCalendarDays, startOfWeek, startOfMonth, startOfYear } from 'date-fns'
 
 import { redirect } from 'next/navigation'
 import { useEffect } from 'react'
@@ -190,6 +191,69 @@ export default function TransactionsPage() {
         setLoading(false);
     }
 
+    // Derived filtered / searched / sorted list (client side)
+    const filteredTransactions = (() => {
+        let list = [...transactionsData]
+
+        // Search (case-insensitive across title, subtitle, category, account)
+        if (searchTerm.trim()) {
+            const q = searchTerm.trim().toLowerCase()
+            list = list.filter(t => (
+                t.title?.toLowerCase().includes(q) ||
+                t.subTitle?.toLowerCase().includes(q) ||
+                t.categoryName?.toLowerCase().includes(q) ||
+                t.accountName?.toLowerCase().includes(q)
+            ))
+        }
+
+        // Type filter
+        if (filterType !== 'all') {
+            list = list.filter(t => t.type === filterType)
+        }
+
+        // Date range filter (expects ISO or yyyy-mm-dd in t.date)
+        if (dateRange !== 'all') {
+            const now = new Date()
+            list = list.filter(t => {
+                if (!t.date) return false
+                const d = new Date(t.date)
+                switch (dateRange) {
+                    case 'today':
+                        return differenceInCalendarDays(now, d) === 0
+                    case 'week': {
+                        const weekStart = startOfWeek(now, { weekStartsOn: 1 })
+                        return d >= weekStart
+                    }
+                    case 'month': {
+                        const monthStart = startOfMonth(now)
+                        return d >= monthStart
+                    }
+                    case 'year': {
+                        const yearStart = startOfYear(now)
+                        return d >= yearStart
+                    }
+                    default:
+                        return true
+                }
+            })
+        }
+
+        // Sorting
+        list.sort((a, b) => {
+            switch (sortBy) {
+                case 'amount':
+                    return b.amount - a.amount
+                case 'type':
+                    return a.type.localeCompare(b.type)
+                case 'date':
+                default:
+                    // Newest first
+                    return new Date(b.date).getTime() - new Date(a.date).getTime()
+            }
+        })
+        return list
+    })()
+
     return (
         <div className="min-h-screen bg-[#1a1a1a] text-white">
             <TransactionsHeader userID={user?.id ?? ''} onFetchTransactions={handleFetchTransactions} />
@@ -209,7 +273,7 @@ export default function TransactionsPage() {
                 <TransactionsSummary />
 
                 <TransactionsTable 
-                    transactions={transactionsData} 
+                    transactions={filteredTransactions} 
                     userID={user?.id ?? ''} 
                     onDeleteTransaction={deleteTransaction}
                     onTransactionUpdated={handleFetchTransactions}
