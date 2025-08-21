@@ -1,4 +1,28 @@
-export function ExpensesCard() {
+'use client'
+import { useState } from "react"
+interface Transaction {
+    id: string
+    user_id: string
+    title: string
+    subTitle: string
+    type: string
+    amount: number
+    amountColor: string
+    date: string
+    category: string
+    categoryID: string
+    categoryColor: string
+    categoryName: string
+    accountID: string
+    accountName: string
+    icon: string
+}
+
+interface ExpensesCardProps {
+  transactions: Transaction[]
+}
+export function ExpensesCard({ transactions }: ExpensesCardProps) {
+
   const expenses = [
     { category: 'Rent', percentage: 43, color: '#fbbf24' },
     { category: 'Food', percentage: 12, color: '#10b981' },
