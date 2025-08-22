@@ -32,6 +32,10 @@ interface Account {
 }
 
 export default function TransactionsTable({ transactions, userID, onDeleteTransaction, onTransactionUpdated }: TransactionProps) {
+    const [pageButtons, setPageButtons] = useState<number[]>([])
+    const pageSize = 10 // Number of transactions per page
+    const [pageStart, setPageStart] = useState(0)
+
     const [accounts, setAccounts] = useState<Account[]>([])
     // Local copy so we can optimistically update edited rows without forcing parent to refetch
     const [localTransactions, setLocalTransactions] = useState(transactions)
@@ -283,6 +287,18 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
         // Update local accounts state
         setAccounts(prev => prev.map(acc => acc.id === currentAccount.id ? { ...acc, balance: String(newBalance) } : acc))
     }
+
+    const updatePageNumbersTable = () => {
+        const totalTransactions = localTransactions.length
+        const totalPages = Math.ceil(totalTransactions / pageSize)
+        const pagesArray = Array.from({ length: totalPages }, (_, i) => i + 1)
+        setPageButtons(pagesArray)
+    }
+
+    useEffect(() => {
+        updatePageNumbersTable()
+    }, [localTransactions, pageSize])
+
     return (
         <div className="bg-[#2a2a2a] rounded-xl border border-gray-700 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-700">
@@ -314,7 +330,7 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">
-                        {localTransactions.map((transaction, index) => {
+                        {localTransactions.slice(pageStart, pageStart + pageSize).map((transaction, index) => {
                             const isEditing = editingTransaction?.index === index
                             return (
                                 <tr key={transaction.id || index} className="hover:bg-[#3a3a3a] transition-colors">
@@ -488,15 +504,14 @@ export default function TransactionsTable({ transactions, userID, onDeleteTransa
                     <button className="px-3 py-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white rounded text-sm transition-colors">
                         Previous
                     </button>
-                    <button className="px-3 py-1 bg-yellow-500 text-black rounded text-sm">
-                        1
-                    </button>
-                    <button className="px-3 py-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white rounded text-sm transition-colors">
-                        2
-                    </button>
-                    <button className="px-3 py-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white rounded text-sm transition-colors">
-                        3
-                    </button>
+                    {/* Example page buttons */}
+                    {pageButtons.map((page) => (
+                        <button 
+                            key={page} className="px-3 py-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white rounded text-sm transition-colors"
+                            onClick={() => setPageStart(page - 1)}>
+                            {page}
+                        </button>
+                    ))}
                     <button className="px-3 py-1 bg-[#3a3a3a] hover:bg-[#4a4a4a] text-white rounded text-sm transition-colors">
                         Next
                     </button>
