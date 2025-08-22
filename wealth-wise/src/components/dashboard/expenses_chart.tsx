@@ -23,18 +23,13 @@ interface ExpensesCardProps {
   transactions: Transaction[]
 }
 export function ExpensesCard({ transactions }: ExpensesCardProps) {
-  // Derived metrics from incoming transactions
   const expenseTransactions = (transactions || []).filter(
     (t) => (t.type || '').toLowerCase() === 'expense'
   )
-
-  // 1) Total amount of expenses
   const totalExpenses = expenseTransactions.reduce(
     (sum, t) => sum + Number(t.amount || 0),
     0
   )
-
-  // 2) Expenses per category (sum amounts grouped by categoryName)
   const expensesByCategoryMap: Record<string, number> = {}
   for (const t of expenseTransactions) {
     const key = t.categoryName || 'Uncategorized'
