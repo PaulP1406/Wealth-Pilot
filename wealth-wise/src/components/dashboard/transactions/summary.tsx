@@ -1,26 +1,66 @@
-export default function TransactionsSummary() {
+'use client'
+import { createClient } from '@/utils/supabase/client'
+import { useEffect, useState } from 'react'
+
+interface TransactionsSummaryProps {
+    userID: string | undefined
+}
+
+export default function TransactionsSummary({ userID }: TransactionsSummaryProps) {
+    const [totalIncome, setTotalIncome] = useState(0)
+    const [totalExpenses, setTotalExpenses] = useState(0)
+    const [netFlow, setNetFlow] = useState(0)
+    const [transactionCount, setTransactionCount] = useState(0)
+
+    const supabase = createClient()
+    useEffect(() => {
+        if (userID) {
+            fetchAccountInsights(userID)
+        }
+    }, [userID])
+
+    const fetchAccountInsights = async (userID: string) => {
+        const { data: accountsData, error: accountError } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('user_id', userID)
+        if (accountError) {
+            console.error('Error fetching account data:', accountError)
+            return <div>Error loading account data</div>
+        }
+        console.log('transactions', accountsData)
+        const totalIncome = accountsData.filter(tx => tx.type === 'income').reduce((sum, tx) => sum + Number(tx.amount ?? 0), 0);
+        const totalExpenses = accountsData.filter(tx => tx.type === 'expense').reduce((sum, tx) => sum + Number(tx.amount ?? 0), 0);
+        const netFlow = totalIncome - totalExpenses;
+        const transactionCount = accountsData.length;
+
+        setTotalIncome(totalIncome);
+        setTotalExpenses(totalExpenses);
+        setNetFlow(netFlow);
+        setTransactionCount(transactionCount);
+    }
     const summaryData = [
         {
             title: "Total Income",
-            amount: "$8,450.00",
+            amount: `$${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             color: "green",
             icon: "📈"
         },
         {
             title: "Total Expenses",
-            amount: "$3,280.50",
+            amount: `$${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             color: "red",
             icon: "📉"
         },
         {
             title: "Net Flow",
-            amount: "$5,169.50",
+            amount: `$${netFlow.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             color: "yellow",
             icon: "💰"
         },
         {
             title: "Transactions",
-            amount: "127",
+            amount: `${transactionCount}`,
             color: "blue",
             icon: "📊"
         }

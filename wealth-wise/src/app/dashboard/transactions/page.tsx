@@ -269,8 +269,8 @@ export default function TransactionsPage() {
                     dateRange={dateRange}
                     setDateRange={setDateRange}
                 />
-                
-                <TransactionsSummary />
+
+                <TransactionsSummary userID={user?.id ?? ''} />
 
                 <TransactionsTable 
                     transactions={filteredTransactions} 
