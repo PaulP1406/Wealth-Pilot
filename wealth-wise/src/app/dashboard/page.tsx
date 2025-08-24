@@ -82,8 +82,7 @@ export default async function DashBoard(
     .from('transactions')
     .select('*')
     .eq('user_id', user.id)
-    .order('date', { ascending: false })
-    .limit(5)
+  .order('date', { ascending: false })
 
   if (transactionsError) {
     console.error('Error fetching transactions data:', transactionsError)
@@ -134,8 +133,8 @@ export default async function DashBoard(
               amount="$1,200.00"
               type="unregular payment"
             />
-            <ExpensesCard />
-            <RecentTransactionsCard transactions={transactionsData} />
+            <ExpensesCard transactions={transactionsData} />
+            <RecentTransactionsCard transactions={(transactionsData || []).slice(0, 5)} />
           </div>
         </div>
 
