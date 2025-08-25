@@ -72,13 +72,13 @@ export default function SideNav() {
     }
   }, [])
 
-  const Item = ({ href, label, emoji }: { href: string; label: string; emoji: string }) => {
+  const Item1 = ({ href, label, emoji }: { href: string; label: string; emoji: string }) => {
     const active = pathname === href
     return (
       <Link
         href={href}
         aria-label={label}
-        className={`flex items-center justify-center w-12 h-12 rounded-full transition-colors border ${
+        className={`mt-8 relative flex items-center justify-center w-16 h-16 rounded-full transition-colors border ${
           active ? 'bg-yellow-500/20 border-yellow-500 text-yellow-400' : 'bg-[#1f1f1f] border-[#3a3a3a] text-gray-300 hover:text-white hover:border-gray-500'
         }`}
         title={label}
@@ -90,22 +90,57 @@ export default function SideNav() {
     )
   }
 
+  const Item2 = ({ href, label, emoji }: { href: string; label: string; emoji: string }) => {
+    const active = pathname === href
+    return (
+      <Link
+        href={href}
+        aria-label={label}
+        className={`top-24 absolute flex items-center justify-center w-16 h-16 rounded-full transition-colors border ${
+          active ? 'bg-yellow-500/20 border-yellow-500 text-yellow-400' : 'bg-[#1f1f1f] border-[#3a3a3a] text-gray-300 hover:text-white hover:border-gray-500'
+        }`}
+        title={label}
+      >
+        <span className="text-lg" role="img" aria-hidden>
+          {emoji}
+        </span>
+      </Link>
+    )
+  }
+
+  const Item3 = ({ href, label, emoji }: { href: string; label: string; emoji: string }) => {
+    const active = pathname === href
+    return (
+      <Link
+        href={href}
+        aria-label={label}
+        className={`top-38 absolute flex items-center justify-center w-16 h-16 rounded-full transition-colors border ${
+          active ? 'bg-yellow-500/20 border-yellow-500 text-yellow-400' : 'bg-[#1f1f1f] border-[#3a3a3a] text-gray-300 hover:text-white hover:border-gray-500'
+        }`}
+        title={label}
+      >
+        <span className="text-lg" role="img" aria-hidden>
+          {emoji}
+        </span>
+      </Link>
+    )
+  }
   return (
     <aside className="fixed left-4 z-40" style={{ top }}>
       <nav
         ref={navRef}
-        className="flex flex-col items-center gap-3 p-2 bg-[#2a2a2a] border border-gray-700 rounded-2xl shadow-lg cursor-grab active:cursor-grabbing select-none"
+        className="relative flex flex-col items-center gap-3 p-2 rounded-2xl shadow-lg cursor-grab active:cursor-grabbing select-none"
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         aria-label="Side navigation"
       >
         {/* 1) Logo */}
-        <Item href="/" label="Home" emoji="🟡" />
+        <Item1 href="/" label="Home" emoji="🟡" />
         <div className="w-8 h-px bg-gray-700 my-1" />
         {/* 2) Dashboard */}
-        <Item href="/dashboard" label="Dashboard" emoji="🏠" />
+        <Item2 href="/dashboard" label="Dashboard" emoji="🏠" />
         {/* 3) Investment Simulator */}
-        <Item href="/investment-simulator" label="Investment Simulator" emoji="📈" />
+        <Item3 href="/investment-simulator" label="Investment Simulator" emoji="📈" />
       </nav>
     </aside>
   )
