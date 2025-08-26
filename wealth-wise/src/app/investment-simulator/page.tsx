@@ -1,5 +1,5 @@
 import SideNav from '@/components/SideNav'
-
+import MainChart from '@/components/finance/mainChart'
 export default function InvestmentSimulatorPage() {
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white">
@@ -12,10 +12,11 @@ export default function InvestmentSimulatorPage() {
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-[#2a2a2a] rounded-xl p-6 border border-gray-700">
-          <p className="text-gray-300">Coming soon…</p>
+        <div className="bg-[#2a2a2a] rounded-xl p-6 border border-gray-700 h-max">
+          <MainChart />
         </div>
       </main>
+      
     </div>
   )
 }

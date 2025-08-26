@@ -5,7 +5,6 @@ import { BalanceCard } from '@/components/dashboard/balance_card'
 import { UpcomingPaymentsCard } from '@/components/dashboard/upcoming_payments'
 import { ExpensesCard } from '@/components/dashboard/expenses_chart'
 import { RecentTransactionsCard } from '@/components/dashboard/recent_transactions'
-import SideNav from '@/components/SideNav'
 
 // overlay components
 import AddAccountModal from '@/components/dashboard/AddAccountModal'
@@ -92,7 +91,6 @@ export default async function DashBoard(
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white">
-  <SideNav />
       {/* Header */}
       <header className="bg-[#2a2a2a] border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
