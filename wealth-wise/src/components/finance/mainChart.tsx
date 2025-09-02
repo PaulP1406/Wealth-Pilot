@@ -1,6 +1,7 @@
 "use client"
 import * as React from 'react'
 import { LineChart } from '@mui/x-charts/LineChart'
+import { createClient } from '../../utils/supabase/client'
 
 // Simple currency formatter (USD)
 const fmtUSD = (v: number) =>
@@ -42,7 +43,8 @@ const RANGE_TO_DAYS: Record<Exclude<RangeKey, 'ALL'>, number> = {
 }
 
 export default function BasicLineChart() {
-  const { x, y } = React.useMemo(buildSampleData, [])
+  const [x, setX] = React.useState<Date[]>([])
+  const [y, setY] = React.useState<number[]>([])
   const [range, setRange] = React.useState<RangeKey>('ALL')
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [dims, setDims] = React.useState({ width: 0, height: 480 })
@@ -59,6 +61,50 @@ export default function BasicLineChart() {
   }, [x, y, range])
 
   const current = React.useMemo(() => (yRange.length ? yRange[yRange.length - 1] : 0), [yRange])
+
+  // Fetch data from Supabase for the selected range
+  React.useEffect(() => {
+    const run = async () => {
+      const supabase = createClient()
+      // Compute cutoff for range (except ALL)
+      let query = supabase
+        .from('portfolio_value_timeseries')
+        .select('ts,total_value,granularity')
+        .eq('granularity', '1d')
+        .order('ts', { ascending: true })
+        .limit(2000)
+      if (range !== 'ALL') {
+        const days = RANGE_TO_DAYS[range]
+        const cutoffIso = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+        query = query.gte('ts', cutoffIso)
+      }
+      const { data, error } = await query
+      if (error) {
+        console.error('Fetch portfolio time series error:', error)
+        // Fallback to sample data
+        const sample = buildSampleData()
+        setX(sample.x)
+        setY(sample.y)
+        return
+      }
+      if (!data || data.length === 0) {
+        const sample = buildSampleData()
+        setX(sample.x)
+        setY(sample.y)
+        return
+      }
+      // Map results
+      const xs: Date[] = []
+      const ys: number[] = []
+      for (const row of data as Array<{ ts: string; total_value: number }>) {
+        xs.push(new Date(row.ts))
+        ys.push(Number(row.total_value))
+      }
+      setX(xs)
+      setY(ys)
+    }
+    run()
+  }, [range])
 
   // Measure container and update chart size
   React.useEffect(() => {
