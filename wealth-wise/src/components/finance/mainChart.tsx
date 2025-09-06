@@ -3,6 +3,8 @@ import React from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { Card, CardContent, Typography } from "@mui/material";
 
+import { createClient } from "@/utils/supabase/client";
+
 type RangeKey = '1D' | '5D' | '1M' | '3M' | '6M' | '1Y' | 'ALL'
 
 type Point = { name: string; value: number }
@@ -15,7 +17,11 @@ function genSeries(count: number, start: number, step: number, label: (i: number
   return arr
 }
 
+
+
 // Static, deterministic datasets per range (no time-based generation)
+// Make a hashmap to store the range and their data points, points are stored in an array
+// Make dynamic: fetch the data into arrays, depending on granuity
 const SERIES: Record<RangeKey, Point[]> = {
   '1D': genSeries(24, 10250, 18, (i) => `H${i + 1}`),
   '5D': genSeries(5, 10100, 95, (i) => `Day ${i + 1}`),
@@ -26,9 +32,25 @@ const SERIES: Record<RangeKey, Point[]> = {
   'ALL': genSeries(24, 8500, 150, (i) => `Month ${i + 1}`),
 }
 
-export default function PortfolioChart() {
+interface mainChartProps {
+  userID: String
+}
+export default function PortfolioChart(userID : mainChartProps) {
   const [range, setRange] = React.useState<RangeKey>('ALL')
   const chartData = SERIES[range]
+
+  const supabase = createClient()
+  const fetchMainGraphData = async (userID: String) => {
+    const {data, error} = await supabase
+    .from("portfolio_value_timeseries")
+    .select('*')
+    .eq('user_id', userID)
+
+    if (error) {
+      console.log("fetching error")
+      return
+    }
+  }
 
   return (
     <Card sx={{ bgcolor: "black", color: "white", borderRadius: 3, p: 2 }}>
