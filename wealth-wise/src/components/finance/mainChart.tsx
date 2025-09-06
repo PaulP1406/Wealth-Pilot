@@ -36,23 +36,36 @@ const SERIES: Record<RangeKey, Point[]> = {
 interface mainChartProps {
   userID: String
 }
+
+interface portfolio_value_data {
+  rangeKey: RangeKey
+  point: Point
+}
 export default function PortfolioChart(userID : mainChartProps) {
   const [range, setRange] = React.useState<RangeKey>('ALL')
   const chartData = SERIES[range]
 
   const supabase = createClient()
+  const oneDay: Point[] = []
+  const fiveDay: Point[] = []
+  const oneMonth: Point[] = []
+  const threeMonth: Point[] = []
+  const sixMonth: Point[] = []
+  const oneYear: Point[] =[]
+  const allTime: Point[] = []
   const fetchMainGraphData = async (userID: String) => {
-    const {data, error} = await supabase
+    const {data : mainGraphData, error: mainGraphError} = await supabase
     .from("portfolio_value_timeseries")
     .select('*')
     .eq('user_id', userID)
     .eq('granularity', range)
-    .returns<PvtsRow[]>();
 
-    if (error) {
+    if (mainGraphError) {
       console.log("fetching error")
       return
     }
+
+
 
   }
 
