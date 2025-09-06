@@ -1,6 +1,6 @@
 'use client'
 import React from "react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 import { Card, CardContent, Typography } from "@mui/material";
 
 import { createClient } from "@/utils/supabase/client";
@@ -9,65 +9,108 @@ type RangeKey = '1D' | '5D' | '1M' | '3M' | '6M' | '1Y' | 'ALL'
 type PvtsRow = { ts: string; total_value: number; granularity: '1h' | '1d' };
 
 type Point = { name: string; value: number }
-
-function genSeries(count: number, start: number, step: number, label: (i: number) => string): Point[] {
-  const arr: Point[] = []
-  for (let i = 0; i < count; i++) {
-    arr.push({ name: label(i), value: Math.round(start + i * step) })
-  }
-  return arr
-}
-
-
-
-// Static, deterministic datasets per range (no time-based generation)
-// Make a hashmap to store the range and their data points, points are stored in an array
-// Make dynamic: fetch the data into arrays, depending on granuity
-const SERIES: Record<RangeKey, Point[]> = {
-  '1D': genSeries(24, 10250, 18, (i) => `H${i + 1}`),
-  '5D': genSeries(5, 10100, 95, (i) => `Day ${i + 1}`),
-  '1M': genSeries(30, 10000, 22, (i) => `Day ${i + 1}`),
-  '3M': genSeries(12, 9800, 60, (i) => `Week ${i + 1}`),
-  '6M': genSeries(24, 9500, 55, (i) => `Week ${i + 1}`),
-  '1Y': genSeries(12, 9000, 160, (i) => `Month ${i + 1}`),
-  'ALL': genSeries(24, 8500, 150, (i) => `Month ${i + 1}`),
-}
-
 interface mainChartProps {
-  userID: String
+  userID: string
 }
-
-interface portfolio_value_data {
-  rangeKey: RangeKey
-  point: Point
-}
-export default function PortfolioChart(userID : mainChartProps) {
+export default function PortfolioChart(props: mainChartProps) {
   const [range, setRange] = React.useState<RangeKey>('ALL')
-  const chartData = SERIES[range]
-
   const supabase = createClient()
-  const oneDay: Point[] = []
-  const fiveDay: Point[] = []
-  const oneMonth: Point[] = []
-  const threeMonth: Point[] = []
-  const sixMonth: Point[] = []
-  const oneYear: Point[] =[]
-  const allTime: Point[] = []
-  const fetchMainGraphData = async (userID: String) => {
-    const {data : mainGraphData, error: mainGraphError} = await supabase
-    .from("portfolio_value_timeseries")
-    .select('*')
-    .eq('user_id', userID)
-    .eq('granularity', range)
 
-    if (mainGraphError) {
-      console.log("fetching error")
+  // Per-range series (state so they persist across renders)
+  const [oneDay, setOneDay] = React.useState<Point[]>([])
+  const [fiveDay, setFiveDay] = React.useState<Point[]>([])
+  const [oneMonth, setOneMonth] = React.useState<Point[]>([])
+  const [threeMonth, setThreeMonth] = React.useState<Point[]>([])
+  const [sixMonth, setSixMonth] = React.useState<Point[]>([])
+  const [oneYear, setOneYear] = React.useState<Point[]>([])
+  const [allTime, setAllTime] = React.useState<Point[]>([])
+
+  const toPoint = (r: PvtsRow): Point => {
+    const d = new Date(r.ts)
+    const name = r.granularity === '1h'
+      ? d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+      : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    return { name, value: Number(r.total_value) }
+  }
+
+  const fetchMainGraphData = async (userId: string) => {
+    const { data: mainGraphData, error } = await supabase
+      .from('portfolio_value_timeseries')
+      .select('ts,total_value,granularity')
+      .eq('user_id', userId)
+      .in('granularity', ['1h','1d'])
+      .order('ts', { ascending: true })
+
+    if (error) {
+      console.error('fetching error', error)
       return
     }
 
+    const rows = (Array.isArray(mainGraphData) ? mainGraphData : []) as PvtsRow[]
+    rows.sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime())
 
+    const now = Date.now()
+    const day = 24 * 60 * 60 * 1000
+    const cutoff1D  = now - 1 * day
+    const cutoff5D  = now - 5 * day
+    const cutoff1M  = now - 30 * day
+    const cutoff3M  = now - 90 * day
+    const cutoff6M  = now - 180 * day
+    const cutoff1Y  = now - 365 * day
 
+    const oneDayArr: Point[] = []
+    const fiveDayArr: Point[] = []
+    const oneMonthArr: Point[] = []
+    const threeMonthArr: Point[] = []
+    const sixMonthArr: Point[] = []
+    const oneYearArr: Point[] = []
+    const allTimeArr: Point[] = []
+
+    for (const r of rows) {
+      const t = new Date(r.ts).getTime()
+      const p = toPoint(r)
+      allTimeArr.push(p)
+      if (r.granularity === '1h') {
+        if (t >= cutoff1D) oneDayArr.push(p)
+        if (t >= cutoff5D) fiveDayArr.push(p)
+      } else {
+        if (t >= cutoff1M) oneMonthArr.push(p)
+        if (t >= cutoff3M) threeMonthArr.push(p)
+        if (t >= cutoff6M) sixMonthArr.push(p)
+        if (t >= cutoff1Y) oneYearArr.push(p)
+      }
+    }
+
+    setOneDay(oneDayArr)
+    setFiveDay(fiveDayArr)
+    setOneMonth(oneMonthArr)
+    setThreeMonth(threeMonthArr)
+    setSixMonth(sixMonthArr)
+    setOneYear(oneYearArr)
+    setAllTime(allTimeArr)
   }
+
+  React.useEffect(() => {
+    if (!props.userID) return
+    fetchMainGraphData(props.userID)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.userID])
+
+  // Choose data for current range; no default data
+  const chartData: Point[] = React.useMemo(() => {
+    let selected: Point[]
+    switch (range) {
+      case '1D': selected = oneDay; break
+      case '5D': selected = fiveDay; break
+      case '1M': selected = oneMonth; break
+      case '3M': selected = threeMonth; break
+      case '6M': selected = sixMonth; break
+      case '1Y': selected = oneYear; break
+      case 'ALL':
+      default:   selected = allTime; break
+    }
+    return selected
+  }, [range, oneDay, fiveDay, oneMonth, threeMonth, sixMonth, oneYear, allTime])
 
   return (
     <Card sx={{ bgcolor: "black", color: "white", borderRadius: 3, p: 2 }}>

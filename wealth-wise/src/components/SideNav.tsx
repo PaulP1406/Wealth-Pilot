@@ -6,11 +6,8 @@ import { useEffect, useRef, useState } from 'react'
 export default function SideNav() {
   const pathname = usePathname()
   const navRef = useRef<HTMLDivElement>(null)
-  const [top, setTop] = useState<number>(() => {
-    if (typeof window === 'undefined') return 96 // ~top-24
-    const saved = window.localStorage.getItem('sidenav-top')
-    return saved ? Number(saved) : 96
-  })
+  // Use a deterministic initial value for SSR to avoid hydration mismatch; load saved value after mount.
+  const [top, setTop] = useState<number>(96)
   const startYRef = useRef(0)
   const startTopRef = useRef(0)
   const draggingRef = useRef(false)
@@ -27,6 +24,15 @@ export default function SideNav() {
     const onResize = () => setTop(t => clampTop(t))
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  // After mount, read saved position and apply it.
+  useEffect(() => {
+    const saved = window.localStorage.getItem('sidenav-top')
+    if (saved != null) {
+      const val = Number(saved)
+      if (!Number.isNaN(val)) setTop(val)
+    }
   }, [])
 
   useEffect(() => {
