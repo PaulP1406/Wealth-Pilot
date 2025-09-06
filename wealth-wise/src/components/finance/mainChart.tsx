@@ -6,6 +6,7 @@ import { Card, CardContent, Typography } from "@mui/material";
 import { createClient } from "@/utils/supabase/client";
 
 type RangeKey = '1D' | '5D' | '1M' | '3M' | '6M' | '1Y' | 'ALL'
+type PvtsRow = { ts: string; total_value: number; granularity: '1h' | '1d' };
 
 type Point = { name: string; value: number }
 
@@ -45,11 +46,14 @@ export default function PortfolioChart(userID : mainChartProps) {
     .from("portfolio_value_timeseries")
     .select('*')
     .eq('user_id', userID)
+    .eq('granularity', range)
+    .returns<PvtsRow[]>();
 
     if (error) {
       console.log("fetching error")
       return
     }
+
   }
 
   return (
