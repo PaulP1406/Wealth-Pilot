@@ -22,6 +22,7 @@ interface ChartPoint {
 
 export default function StockDetail({ symbol }: StockDetailProps) {
   const [info, setInfo] = useState<Quote | null>(null);
+  const [rawPrice, setRawPrice] = useState<number | null>(null);
   const [chart, setChart] = useState<ChartPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [watching, setWatching] = useState(false);
@@ -31,17 +32,39 @@ export default function StockDetail({ symbol }: StockDetailProps) {
     async function fetchInfo() {
       setLoading(true);
       try {
-        const res = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`);
+  const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}`);
         const data = await res.json();
         const q = data.quoteResponse?.result?.[0];
         if (q) {
+          // Debug: log the full quote object and all numeric fields
+          console.log('Yahoo Finance quote:', q);
+          const priceFields = [
+            'regularMarketPrice', 'ask', 'bid', 'previousClose', 'regularMarketLastClose', 'postMarketPrice', 'preMarketPrice',
+          ];
+          let price = null;
+          for (const field of priceFields) {
+            if (typeof q[field] === 'number' && !isNaN(q[field])) {
+              price = q[field];
+              break;
+            }
+          }
+          // If still not found, try any other numeric field
+          if (price === null) {
+            for (const key in q) {
+              if (typeof q[key] === 'number' && !isNaN(q[key]) && q[key] > 0) {
+                price = q[key];
+                break;
+              }
+            }
+          }
+          setRawPrice(price);
           setInfo({
             symbol: q.symbol,
             shortName: q.shortName || q.symbol,
             longName: q.longName,
-            regularMarketPrice: q.regularMarketPrice,
-            regularMarketChangePercent: q.regularMarketChangePercent,
-            currency: q.currency,
+            regularMarketPrice: 0, // will be replaced by fallback if needed
+            regularMarketChangePercent: q.regularMarketChangePercent ?? 0,
+            currency: q.currency || '',
           });
         }
       } catch {}
@@ -54,7 +77,7 @@ export default function StockDetail({ symbol }: StockDetailProps) {
   useEffect(() => {
     async function fetchChart() {
       try {
-        const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=6mo&interval=1d`);
+  const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=6mo&interval=1d`);
         const data = await res.json();
         const timestamps = data.chart?.result?.[0]?.timestamp || [];
         const prices = data.chart?.result?.[0]?.indicators?.quote?.[0]?.close || [];
@@ -62,7 +85,7 @@ export default function StockDetail({ symbol }: StockDetailProps) {
           date: new Date(t * 1000).toLocaleDateString(),
           price: prices[i],
   })).filter((p: ChartPoint) => p.price != null);
-        setChart(points);
+  setChart(points);
       } catch {}
     }
     fetchChart();
@@ -117,7 +140,14 @@ export default function StockDetail({ symbol }: StockDetailProps) {
             {info?.shortName || symbol} <span style={{ color: '#00FF00', fontWeight: 400, fontSize: 32 }}>{symbol}</span>
           </h2>
           <div style={{ fontSize: 54, fontWeight: 700, marginBottom: 10, color: '#fafafa', textAlign: 'center' }}>
-            {info?.regularMarketPrice != null ? `${info.regularMarketPrice} ${info.currency}` : "N/A"}
+            {(() => {
+              // Prefer rawPrice from quote, else fallback to latest chart point
+              let price = rawPrice;
+              if (price == null || price === 0) {
+                if (chart.length > 0) price = chart[chart.length - 1].price;
+              }
+              return price != null && price !== 0 ? `${price} ${info?.currency ?? ''}` : "No price available";
+            })()}
           </div>
           <div style={{ color: (info?.regularMarketChangePercent ?? 0) > 0 ? "#00FF00" : "#ff5555", fontWeight: 600, fontSize: 32, marginBottom: 32, textAlign: 'center' }}>
             {info?.regularMarketChangePercent != null ? `${info.regularMarketChangePercent.toFixed(2)}%` : ""}
