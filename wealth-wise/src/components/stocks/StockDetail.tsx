@@ -1,5 +1,8 @@
 'use client'
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import AddToSimulatorModal from "./AddToSimulatorModal";
+import { createClient } from "@/utils/supabase/client";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface StockDetailProps {
@@ -21,11 +24,13 @@ interface ChartPoint {
 }
 
 export default function StockDetail({ symbol }: StockDetailProps) {
+  const router = useRouter();
   const [info, setInfo] = useState<Quote | null>(null);
   const [rawPrice, setRawPrice] = useState<number | null>(null);
   const [chart, setChart] = useState<ChartPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [watching, setWatching] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   // Fetch stock info
   useEffect(() => {
@@ -74,21 +79,22 @@ export default function StockDetail({ symbol }: StockDetailProps) {
   }, [symbol]);
 
   // Fetch chart data (6 months)
+  async function fetchChart() {
+    try {
+      const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=6mo&interval=1d`);
+      const data = await res.json();
+      const timestamps = data.chart?.result?.[0]?.timestamp || [];
+      const prices = data.chart?.result?.[0]?.indicators?.quote?.[0]?.close || [];
+      const points: ChartPoint[] = timestamps.map((t: number, i: number) => ({
+        date: new Date(t * 1000).toLocaleDateString(),
+        price: prices[i],
+      })).filter((p: ChartPoint) => p.price != null);
+      setChart(points);
+    } catch {}
+  }
   useEffect(() => {
-    async function fetchChart() {
-      try {
-  const res = await fetch(`https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=6mo&interval=1d`);
-        const data = await res.json();
-        const timestamps = data.chart?.result?.[0]?.timestamp || [];
-        const prices = data.chart?.result?.[0]?.indicators?.quote?.[0]?.close || [];
-        const points: ChartPoint[] = timestamps.map((t: number, i: number) => ({
-          date: new Date(t * 1000).toLocaleDateString(),
-          price: prices[i],
-  })).filter((p: ChartPoint) => p.price != null);
-  setChart(points);
-      } catch {}
-    }
     fetchChart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbol]);
 
   // Watchlist logic
@@ -118,9 +124,52 @@ export default function StockDetail({ symbol }: StockDetailProps) {
     setWatching(false);
   }
 
-  function importToSimulator() {
-    // Placeholder: you can wire this to your simulator logic
-    alert(`Imported ${symbol} to simulator!`);
+  async function handleAddToSimulator(shares: number, price: number) {
+    setShowAddModal(false);
+    // TODO: Replace with real user/portfolio selection
+    const userId = "demo-user-id";
+    const portfolioId = "demo-portfolio-id";
+    const supabase = createClient();
+
+    // 1. Insert holding (upsert)
+    await supabase.from("investment_holdings").upsert([
+      {
+        portfolio_id: portfolioId,
+        symbol,
+        name: info?.shortName || symbol,
+        quantity: shares,
+        purchase_price: price,
+        asset_type: "stock",
+      }
+    ], { onConflict: "portfolio_id,symbol" });
+
+    // 2. Insert buy transaction
+    await supabase.from("investment_transactions").insert({
+      portfolio_id: portfolioId,
+      symbol,
+      action: "buy",
+      quantity: shares,
+      price_per_unit: price,
+    });
+
+    // 3. Update portfolio_value_timeseries (add a new point)
+    const totalValue = shares * price; // For demo, just this buy
+    await supabase.from("portfolio_value_timeseries").insert({
+      user_id: userId,
+      ts: new Date().toISOString(),
+      total_value: totalValue,
+      currency: info?.currency || "USD",
+      granularity: "1d",
+      source: "simulator"
+    });
+
+    // 4. Refetch chart
+    fetchChart();
+
+    // 5. Update watchlist (force re-render)
+    addToWatchlist();
+
+    alert(`Added ${shares} shares of ${symbol} at $${price} to simulator.`);
   }
 
   function buyStock() {
@@ -134,6 +183,12 @@ export default function StockDetail({ symbol }: StockDetailProps) {
   return (
     <div style={{ width: '100vw', minHeight: '100vh', background: '#18181b', color: '#fafafa', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 48, paddingBottom: 48 }}>
       <div style={{ width: '100%', maxWidth: 1100, background: '#18181b', borderRadius: 24, padding: 56, boxShadow: '0 4px 32px #000', color: '#fafafa', margin: '0 auto' }}>
+        <button
+          onClick={() => router.push('/investment-simulator')}
+          style={{ marginBottom: 32, padding: '12px 28px', background: '#222', color: '#fafafa', borderRadius: 10, fontWeight: 700, fontSize: 20, border: '1px solid #333', cursor: 'pointer', boxShadow: '0 2px 8px #000' }}
+        >
+          ← Back to Investment Dashboard
+        </button>
       {loading ? <div style={{ color: '#aaa', textAlign: 'center', fontSize: 28, marginTop: 80 }}>Loading...</div> : (
         <>
           <h2 style={{ fontWeight: 700, fontSize: 44, marginBottom: 16, color: '#fafafa', textAlign: 'center' }}>
@@ -171,7 +226,7 @@ export default function StockDetail({ symbol }: StockDetailProps) {
           <div style={{ display: "flex", gap: 32, marginBottom: 32, flexWrap: 'wrap', justifyContent: 'center' }}>
             <button onClick={buyStock} style={{ padding: "18px 36px", background: '#00FF00', color: '#18181b', borderRadius: 12, fontWeight: 700, border: 'none', fontSize: 24, cursor: 'pointer' }}>Buy</button>
             <button onClick={sellStock} style={{ padding: "18px 36px", background: '#ff5555', color: '#fafafa', borderRadius: 12, fontWeight: 700, border: 'none', fontSize: 24, cursor: 'pointer' }}>Sell</button>
-            <button onClick={importToSimulator} style={{ padding: "18px 36px", background: '#23232a', color: '#fafafa', borderRadius: 12, fontWeight: 700, fontSize: 24, cursor: 'pointer', border: '1px solid #333' }}>Add to Simulator</button>
+            <button onClick={() => setShowAddModal(true)} style={{ padding: "18px 36px", background: '#23232a', color: '#fafafa', borderRadius: 12, fontWeight: 700, fontSize: 24, cursor: 'pointer', border: '1px solid #333' }}>Add to Simulator</button>
             {watching ? (
               <button onClick={removeFromWatchlist} style={{ padding: "18px 36px", background: '#222', color: "#ff5555", borderRadius: 12, fontWeight: 700, fontSize: 24, cursor: 'pointer', border: '1px solid #333' }}>Remove from Watchlist</button>
             ) : (
@@ -179,6 +234,14 @@ export default function StockDetail({ symbol }: StockDetailProps) {
             )}
           </div>
         </>
+      )}
+      {showAddModal && (
+        <AddToSimulatorModal
+          symbol={symbol}
+          name={info?.shortName || symbol}
+          onSubmit={handleAddToSimulator}
+          onClose={() => setShowAddModal(false)}
+        />
       )}
       </div>
     </div>

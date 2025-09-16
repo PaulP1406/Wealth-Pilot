@@ -35,6 +35,10 @@ export default function PortfolioChart(props: mainChartProps) {
   }
 
   const fetchMainGraphData = async (userId: string) => {
+    if (!userId) {
+      console.error('No userId provided to fetchMainGraphData');
+      return;
+    }
     const { data: mainGraphData, error } = await supabase
       .from('portfolio_value_timeseries')
       .select('ts,total_value,granularity')
@@ -43,12 +47,12 @@ export default function PortfolioChart(props: mainChartProps) {
       .order('ts', { ascending: true })
 
     if (error) {
-      console.error('fetching error', error)
-      return
+      console.error('fetching error', error, mainGraphData);
+      return;
     }
 
-    const rows = (Array.isArray(mainGraphData) ? mainGraphData : []) as PvtsRow[]
-    rows.sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime())
+    const rows = (Array.isArray(mainGraphData) ? mainGraphData : []) as PvtsRow[];
+    rows.sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
 
     const now = Date.now()
     const day = 24 * 60 * 60 * 1000
