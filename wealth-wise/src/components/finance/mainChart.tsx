@@ -12,6 +12,7 @@ type Point = { name: string; value: number }
 interface mainChartProps {
   userID: string
 }
+
 export default function PortfolioChart(props: mainChartProps) {
   const [range, setRange] = React.useState<RangeKey>('ALL')
   const supabase = createClient()
